@@ -1,0 +1,1 @@
+export const WORKER_URL = "https://maestro-proxy.s-borankocoglu.workers.dev";
