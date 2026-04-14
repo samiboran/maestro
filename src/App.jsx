@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import maestroChar from "./assets/miya.jpg";
 import ApiKeyModal from "./ApiKeyModal";
+import DraggablePanel from "./components/DraggablePanel";
 import { WORKER_URL } from "./config";
 import "./App.css";
 
 const MODELS = [
-  { id: "claude", name: "Claude", color: "#7F77DD" },
-  { id: "chatgpt", name: "ChatGPT", color: "#1D9E75" },
-  { id: "gemini", name: "Gemini", color: "#378ADD" },
+  { id: "claude", name: "Claude", color: "#7F77DD", initialSnap: "left" },
+  { id: "chatgpt", name: "ChatGPT", color: "#1D9E75", initialSnap: "right" },
+  { id: "gemini", name: "Gemini", color: "#378ADD", initialSnap: "bottom-center" },
 ];
 
 export default function App() {
@@ -84,10 +85,33 @@ export default function App() {
     setSynthesis(result.text);
   }
 
+  function renderModelContent(modelId) {
+    if (loading && !responses[modelId]) {
+      return (
+        <div className="model-loading">
+          <span className="dot" />
+          <span className="dot" />
+          <span className="dot" />
+        </div>
+      );
+    }
+    if (responses[modelId]) {
+      return <p className="model-response">{responses[modelId]}</p>;
+    }
+    return <div className="model-placeholder" />;
+  }
+
   return (
     <div className="maestro-root">
       <div className="bg-noise" />
       <div className="bg-glow" />
+
+      {/* Snap noktaları göstergesi */}
+      <div className="snap-guides">
+        <div className="snap-point" style={{ left: '15%', top: '35%' }} />
+        <div className="snap-point" style={{ left: '85%', top: '35%' }} />
+        <div className="snap-point" style={{ left: '50%', top: '85%' }} />
+      </div>
 
       {showModal && (
         <ApiKeyModal
@@ -125,96 +149,76 @@ export default function App() {
         </div>
       )}
 
-      <div className="stage">
-        <div className="model-panel left">
-          <div className="model-tag" style={{ "--c": "#7F77DD" }}>Claude</div>
-          {loading && !responses.claude ? (
-            <div className="model-loading"><span className="dot" /><span className="dot" /><span className="dot" /></div>
-          ) : responses.claude ? (
-            <p className="model-response">{responses.claude}</p>
-          ) : (
-            <div className="model-placeholder" />
-          )}
+      {/* Sürüklenebilir Model Panelleri */}
+      {MODELS.map((model, idx) => (
+        <DraggablePanel
+          key={model.id}
+          id={model.id}
+          color={model.color}
+          label={model.name}
+          initialSnap={model.initialSnap}
+          zIndex={10 + idx}
+        >
+          {renderModelContent(model.id)}
+        </DraggablePanel>
+      ))}
+
+      {/* Merkez: Karakter + Prompt */}
+      <div className="center-fixed">
+        <div className={`char-wrap ${loading ? "conducting" : ""}`}>
+          <img src={maestroChar} alt="Maestro" className="char-img" />
+          <div className="char-glow" />
         </div>
 
-        <div className="center-col">
-          <div className={`char-wrap ${loading ? "conducting" : ""}`}>
-            <img src={maestroChar} alt="Maestro" className="char-img" />
-            <div className="char-glow" />
+        {asked && (
+          <div className={`consensus-badge ${consensus}`}>
+            {consensus === "high" ? "🟢 Yüksek Consensus" : "🔴 Görüşler Ayrışıyor"}
           </div>
+        )}
 
-          {asked && (
-            <div className={`consensus-badge ${consensus}`}>
-              {consensus === "high" ? "🟢 Yüksek Consensus" : "🔴 Görüşler Ayrışıyor"}
+        <div className="prompt-area">
+          <textarea
+            className="prompt-input"
+            placeholder="Maestro'ya sor..."
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleAsk();
+              }
+            }}
+            rows={2}
+          />
+          <button className="ask-btn" onClick={handleAsk} disabled={loading}>
+            {loading ? "..." : "Sor"}
+          </button>
+        </div>
+
+        {asked && (
+          <div className="synthesis-area">
+            <div className="synthesis-label">Synthesis — hakem seç:</div>
+            <div className="synthesis-btns">
+              {MODELS.filter((m) => apiKeys?.[m.id]).map((m) => (
+                <button
+                  key={m.id}
+                  className={`synth-btn ${synthModel === m.id ? "active" : ""}`}
+                  style={{ "--c": m.color }}
+                  onClick={() => handleSynthesize(m.id)}
+                >
+                  {m.name}
+                </button>
+              ))}
             </div>
-          )}
-
-          <div className="prompt-area">
-            <textarea
-              className="prompt-input"
-              placeholder="Maestro'ya sor..."
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleAsk();
-                }
-              }}
-              rows={2}
-            />
-            <button className="ask-btn" onClick={handleAsk} disabled={loading}>
-              {loading ? "..." : "Sor"}
-            </button>
-          </div>
-
-          {asked && (
-            <div className="synthesis-area">
-              <div className="synthesis-label">Synthesis — hakem seç:</div>
-              <div className="synthesis-btns">
-                {MODELS.filter((m) => apiKeys?.[m.id]).map((m) => (
-                  <button
-                    key={m.id}
-                    className={`synth-btn ${synthModel === m.id ? "active" : ""}`}
-                    style={{ "--c": m.color }}
-                    onClick={() => handleSynthesize(m.id)}
-                  >
-                    {m.name}
-                  </button>
-                ))}
+            {synthesis && (
+              <div className="synthesis-result">
+                <span className="synth-by" style={{ color: MODELS.find((m) => m.id === synthModel)?.color }}>
+                  {MODELS.find((m) => m.id === synthModel)?.name} diyor:
+                </span>
+                <p>{synthesis}</p>
               </div>
-              {synthesis && (
-                <div className="synthesis-result">
-                  <span className="synth-by" style={{ color: MODELS.find((m) => m.id === synthModel)?.color }}>
-                    {MODELS.find((m) => m.id === synthModel)?.name} diyor:
-                  </span>
-                  <p>{synthesis}</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div className="model-panel right">
-          <div className="model-tag" style={{ "--c": "#1D9E75" }}>ChatGPT</div>
-          {loading && !responses.chatgpt ? (
-            <div className="model-loading"><span className="dot" /><span className="dot" /><span className="dot" /></div>
-          ) : responses.chatgpt ? (
-            <p className="model-response">{responses.chatgpt}</p>
-          ) : (
-            <div className="model-placeholder" />
-          )}
-        </div>
-      </div>
-
-      <div className="bottom-panel">
-        <div className="model-tag" style={{ "--c": "#378ADD" }}>Gemini</div>
-        {loading && !responses.gemini ? (
-          <div className="model-loading"><span className="dot" /><span className="dot" /><span className="dot" /></div>
-        ) : responses.gemini ? (
-          <p className="model-response">{responses.gemini}</p>
-        ) : (
-          <div className="model-placeholder-wide" />
+            )}
+          </div>
         )}
       </div>
     </div>
