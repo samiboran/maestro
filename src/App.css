@@ -14,32 +14,7 @@
   --gold: #9a7a4a;
 }
 
-/* ===== SNAP GUIDES ===== */
 
-.snap-guides {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.snap-point {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: rgba(154, 122, 74, 0.15);
-  border: 1px dashed rgba(154, 122, 74, 0.3);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: all 0.3s ease;
-}
-
-.maestro-root:has(.draggable-panel.dragging) .snap-point {
-  width: 60px;
-  height: 60px;
-  background: rgba(154, 122, 74, 0.08);
-  border: 2px dashed rgba(154, 122, 74, 0.4);
-}
 
 /* ===== DRAGGABLE PANELS ===== */
 
@@ -47,6 +22,7 @@
   position: fixed;
   width: 300px;
   min-height: 180px;
+  max-height: 400px;
   display: flex;
   flex-direction: column;
   background: var(--surface);
@@ -58,6 +34,7 @@
   box-sizing: border-box;
   will-change: transform;
   overflow: hidden;
+  
 }
 
 .draggable-panel::before {
@@ -81,8 +58,7 @@
 }
 
 .draggable-panel:not(.dragging) {
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .panel-header {
@@ -110,6 +86,7 @@
   cursor: default;
   flex: 1;
   overflow-y: auto;
+  user-select: text;  /* BU SATIRI EKLE */
 }
 
 .draggable-panel .model-tag {
@@ -120,20 +97,36 @@
   text-transform: uppercase;
   margin: 0;
 }
+.prompt-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  width: 100%;
+}
 
+.prompt-row .char-wrap {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.prompt-row .char-img {
+  width: 56px;
+  height: 56px;
+}
 /* ===== CENTER FIXED ===== */
 
 .center-fixed {
   position: fixed;
-  top: 50%;
+  bottom: 2rem;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.25rem;
-  z-index: 50;
-  width: 560px;
+  z-index: 5;
+  width: 720px;
   max-width: 90vw;
 }
 
@@ -148,7 +141,7 @@ body {
 .maestro-root {
   min-height: 100vh;
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 /* Arka plan — beyaz tema için hafif doku */
@@ -280,7 +273,43 @@ body {
   flex-direction: column;
   gap: 0.75rem;
 }
+.synthesis-trigger {
+  background: rgba(154,122,74,0.08);
+  border: 1px solid rgba(154,122,74,0.3);
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+.synthesis-trigger:hover {
+  background: rgba(154,122,74,0.15);
+}
 
+.synthesis-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 320px;
+  background: var(--surface);
+  border-left: 1px solid rgba(154,122,74,0.2);
+  padding: 2rem 1.5rem;
+  box-shadow: -8px 0 32px rgba(0,0,0,0.08);
+  inset: 0;
+  z-index: 49;
+  animation: slideIn 0.3s ease;
+  overflow-y: auto;
+  transform: none !important;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
 .prompt-input {
   width: 100%;
   min-height: 56px;
@@ -298,7 +327,8 @@ body {
   line-height: 1.6;
   border-radius: 24px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  overflow-y: auto;
+  overflow-y: hidden;
+  padding-right: 6rem;
 }
 .prompt-input::placeholder { 
   color: var(--muted);
@@ -309,18 +339,28 @@ body {
   box-shadow: 0 4px 24px rgba(154,122,74,0.12);
 }
 
+.prompt-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
 .ask-btn {
-  align-self: flex-end;
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
   background: var(--gold);
   border: none;
   color: #fff;
   font-family: 'Cinzel', serif;
   font-size: 0.7rem;
   letter-spacing: 0.15em;
-  padding: 0.7rem 2rem;
+  padding: 0.5rem 1.2rem;
   cursor: pointer;
   transition: all 0.2s;
-  border-radius: 8px;
+  border-radius: 20px;
   box-shadow: 0 2px 8px rgba(154,122,74,0.2);
 }
 .ask-btn:hover:not(:disabled) {
@@ -455,6 +495,7 @@ body {
   backdrop-filter: blur(8px);
 }
 .modal {
+  position: relative;
   background: var(--surface);
   border: 1px solid rgba(154,122,74,0.2);
   padding: 2rem;
@@ -463,6 +504,7 @@ body {
   border-radius: 16px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.15);
 }
+
 .modal-title {
   font-family: 'Cinzel', serif;
   font-size: 1.1rem;
@@ -542,6 +584,114 @@ body {
   border-radius: 50%;
   background: var(--muted);
   animation: blink 1.2s ease-in-out infinite;
+}
+/* ── Synthesis Modal ── */
+.synth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.synth-modal {
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  width: 90vw;
+  max-width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+
+.synth-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.synth-modal-close:hover {
+  color: #fff;
+}
+
+.synth-modal-header {
+  padding: 24px 28px 16px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.synth-modal-icon {
+  font-size: 1.6rem;
+  opacity: 0.7;
+}
+
+.synth-modal-by {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.synth-modal-body {
+  padding: 24px 28px;
+  overflow-y: auto;
+  color: #ddd;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  flex: 1;
+  .synth-modal-body h2 {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.synth-modal-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 0.85rem;
+}
+
+.synth-modal-body th,
+.synth-modal-body td {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.synth-modal-body th {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.synth-modal-body strong {
+  color: #fff;
+}
+
+.synth-modal-body ul, .synth-modal-body ol {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+}
+
+.synth-loading {
+  color: #888;
+  font-style: italic;
 }
 .dot:nth-child(2) { animation-delay: 0.2s; }
 .dot:nth-child(3) { animation-delay: 0.4s; }

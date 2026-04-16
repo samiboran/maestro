@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function ApiKeyModal({ onSave }) {
+export default function ApiKeyModal({ onSave, onSkip }) {
   const [keys, setKeys] = useState({
     claude: "",
     chatgpt: "",
@@ -13,9 +13,36 @@ export default function ApiKeyModal({ onSave }) {
     onSave(keys);
   }
 
+  function handleSkip() {
+    const emptyKeys = { claude: "", chatgpt: "", gemini: "" };
+    localStorage.setItem("maestro_keys", JSON.stringify(emptyKeys));
+    if (onSkip) {
+      onSkip();
+    } else {
+      onSave(emptyKeys);
+    }
+  }
+
   return (
     <div className="modal-overlay">
       <div className="modal">
+        <button 
+          className="modal-close" 
+          onClick={handleSkip}
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            right: '1rem',
+            background: 'none',
+            border: 'none',
+            fontSize: '1.5rem',
+            cursor: 'pointer',
+            color: '#6b7280',
+          }}
+        >
+          ✕
+        </button>
+        
         <h2 className="modal-title">API Anahtarları</h2>
         <p className="modal-sub">Kullanmak istediğin modellerin key'lerini gir</p>
 
@@ -36,9 +63,14 @@ export default function ApiKeyModal({ onSave }) {
           </div>
         ))}
 
-        <button className="ask-btn" style={{ width: "100%", marginTop: "1rem" }} onClick={handleSave}>
-          Kaydet ve Başla
-        </button>
+        <div className="modal-actions">
+          <button className="modal-btn secondary" onClick={handleSkip}>
+            Şimdilik Geç
+          </button>
+          <button className="modal-btn primary" onClick={handleSave}>
+            Kaydet ve Başla
+          </button>
+        </div>
       </div>
     </div>
   );

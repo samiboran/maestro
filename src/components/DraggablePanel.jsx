@@ -1,144 +1,136 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
+import { Rnd } from "react-rnd";
 
-// Snap noktaları (viewport yüzdesi olarak merkez noktaları)
+const PANEL_WIDTH = 300;
+const PANEL_HEIGHT = 180;
+
 const SNAP_POINTS = [
-  { id: "left", x: 15, y: 35 },
-  { id: "right", x: 85, y: 35 },
-  { id: "bottom-center", x: 50, y: 85 },
+  { id: "left", x: 0, y: 35 },
+  { id: "right", xPercent: null, xFromRight: true, y: 60 },
+  { id: "bottom-center", x: 50, y: 70 },  // 100'den 70'e düşürdük
 ];
 
-const SNAP_THRESHOLD = 150;
+const SNAP_THRESHOLD = 80;
 
-export default function DraggablePanel({ 
-  id, 
-  color, 
-  label, 
-  children, 
-  initialSnap = "left",
-  zIndex = 10 
+export default function DraggablePanel({
+  id,
+  color,
+  label,
+  children,
+  initialX=20, initialY=80,
+  zIndex = 10
 }) {
-  const panelRef = useRef(null);
-  const [position, setPosition] = useState(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [currentSnap, setCurrentSnap] = useState(initialSnap);
-  const dragOffset = useRef({ x: 0, y: 0 });
+const getPositionFromSnap = (snapId) => {
+  const snap = SNAP_POINTS.find(s => s.id === snapId) || SNAP_POINTS[0];
 
-  // Snap noktasından pozisyon hesapla (merkez noktası olarak)
-  function getPositionFromSnap(snapId) {
-    const snap = SNAP_POINTS.find(s => s.id === snapId) || SNAP_POINTS[0];
-    return {
-      x: window.innerWidth * snap.x / 100,
-      y: window.innerHeight * snap.y / 100
-    };
+  // Güvenli marj ekle (border, scrollbar için)
+  const SAFE_MARGIN = 10;
+  const maxX = window.innerWidth - PANEL_WIDTH - SAFE_MARGIN;
+  const maxY = window.innerHeight - PANEL_HEIGHT - SAFE_MARGIN;
+
+  let x = (window.innerWidth * snap.x) / 100;
+  let y = (window.innerHeight * snap.y) / 100;
+
+  // Edge handling with safe margin
+  if (snap.xFromRight) {
+  x = maxX;
+} else if (snap.x === 0) {
+  x = SAFE_MARGIN;
+} else if (snap.x === 100) {
+  x = maxX;
+} else {
+    x = x - PANEL_WIDTH / 2;
   }
 
-  // İlk pozisyonu ayarla
-  useEffect(() => {
-    setPosition(getPositionFromSnap(initialSnap));
-  }, [initialSnap]);
-
-  // Resize'da pozisyonu güncelle
-  useEffect(() => {
-    function handleResize() {
-      setPosition(getPositionFromSnap(currentSnap));
-    }
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [currentSnap]);
-
-  function handleMouseDown(e) {
-    if (e.target.closest('.panel-content')) return;
-    setIsDragging(true);
-    
-    // Tıklanan nokta ile panel merkezi arasındaki fark
-    dragOffset.current = {
-      x: e.clientX - position.x,
-      y: e.clientY - position.y
-    };
+  if (snap.y === 0) {
+    y = SAFE_MARGIN;
+  } else if (snap.y === 100) {
+    y = maxY;
+  } else {
+    y = y - PANEL_HEIGHT / 2;
   }
 
-  function handleMouseMove(e) {
-    if (!isDragging) return;
-    const x = e.clientX - dragOffset.current.x;
-    const y = e.clientY - dragOffset.current.y;
-    setPosition({ x, y });
-  }
+  // Clamp to ensure always visible
+  x = Math.max(SAFE_MARGIN, Math.min(x, maxX));
+  y = Math.max(SAFE_MARGIN, Math.min(y, maxY));
 
-  function handleMouseUp() {
-    if (!isDragging) return;
-    setIsDragging(false);
-    
-    // En yakın snap noktasını bul
-    let closest = null;
-    let minDist = Infinity;
-    
+  console.log(`Panel ${snapId}: x=${x}, y=${y}`); // Debug
+
+  return { x: Math.round(x), y: Math.round(y) };
+};
+
+  const [position, setPosition] = useState({ x: initialX, y: initialY });
+  const [size, setSize] = useState({ width: PANEL_WIDTH, height: PANEL_HEIGHT });
+  const [zIndexState, setZIndexState] = useState(zIndex);
+
+  const bringToFront = () => {
+    document.querySelectorAll('.draggable-panel').forEach(p => {
+      p.style.zIndex = '10';
+    });
+    setZIndexState(100);
+  };
+
+  const getSnapPosition = (currentX, currentY, currentWidth, currentHeight) => {
+    let newX = currentX;
+    let newY = currentY;
+
     SNAP_POINTS.forEach(snap => {
-      const snapX = window.innerWidth * snap.x / 100;
-      const snapY = window.innerHeight * snap.y / 100;
-      const dist = Math.hypot(position.x - snapX, position.y - snapY);
-      if (dist < minDist) {
-        minDist = dist;
-        closest = snap;
+      let snapX, snapY;
+
+      // Edge snapping for X
+      if (snap.x === 0) {
+        snapX = 0;
+      } else if (snap.x === 100 || snap.xFromRight) {
+    snapX = window.innerWidth - currentWidth - 10;
+} else {
+        snapX = (window.innerWidth * snap.x / 100) - currentWidth / 2;
+      }
+
+      // Edge snapping for Y
+      if (snap.y === 0) {
+        snapY = 0;
+      } else if (snap.y === 100) {
+        snapY = window.innerHeight - currentHeight;
+      } else {
+        snapY = (window.innerHeight * snap.y / 100) - currentHeight / 2;
+      }
+
+      const dist = Math.hypot(currentX - snapX, currentY - snapY);
+      if (dist < SNAP_THRESHOLD) {
+        newX = snapX;
+        newY = snapY;
       }
     });
-    
-    if (closest && minDist < SNAP_THRESHOLD) {
-      setPosition(getPositionFromSnap(closest.id));
-      setCurrentSnap(closest.id);
-    }
-  }
 
-  function handleTouchStart(e) {
-    const touch = e.touches[0];
-    setIsDragging(true);
-    dragOffset.current = {
-      x: touch.clientX - position.x,
-      y: touch.clientY - position.y
-    };
-  }
+    return { x: Math.round(newX), y: Math.round(newY) };
+  };
 
-  function handleTouchMove(e) {
-    if (!isDragging) return;
-    const touch = e.touches[0];
-    const x = touch.clientX - dragOffset.current.x;
-    const y = touch.clientY - dragOffset.current.y;
-    setPosition({ x, y });
-  }
-
-  function handleTouchEnd() {
-    handleMouseUp();
-  }
-
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-      window.addEventListener('touchmove', handleTouchMove);
-      window.addEventListener('touchend', handleTouchEnd);
-    }
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [isDragging, position]);
-
-  if (!position) return null;
+  const handleDragStop = (e, d) => {
+  setPosition({ x: d.x, y: d.y });
+};
 
   return (
-    <div
-      ref={panelRef}
-      className={`draggable-panel ${isDragging ? 'dragging' : ''}`}
+    <Rnd
+      className="draggable-panel"
       style={{
         '--c': color,
-        left: position.x,
-        top: position.y,
-        transform: 'translate(-50%, -50%)',
-        zIndex: isDragging ? 100 : zIndex,
+        zIndex: zIndexState,
       }}
-      onMouseDown={handleMouseDown}
-      onTouchStart={handleTouchStart}
+      size={size}
+      position={position}
+      onDragStart={bringToFront}
+      onDragStop={handleDragStop}
+      onResizeStop={(e, direction, ref, delta, pos) => {
+        setSize({
+          width: parseInt(ref.style.width),
+          height: parseInt(ref.style.height)
+        });
+        setPosition(pos);
+      }}
+      minWidth={200}
+      minHeight={120}
+      bounds={false}
+      dragHandleClassName="panel-header"
     >
       <div className="panel-header">
         <div className="drag-handle">⋮⋮</div>
@@ -147,6 +139,6 @@ export default function DraggablePanel({
       <div className="panel-content">
         {children}
       </div>
-    </div>
+    </Rnd>
   );
 }

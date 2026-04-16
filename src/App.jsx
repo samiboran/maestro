@@ -4,15 +4,17 @@ import ApiKeyModal from "./ApiKeyModal";
 import DraggablePanel from "./components/DraggablePanel";
 import { WORKER_URL } from "./config";
 import "./App.css";
+import ReactMarkdown from 'react-markdown';
 
 const MODELS = [
-  { id: "claude", name: "Claude", color: "#7F77DD", initialSnap: "left" },
-  { id: "chatgpt", name: "ChatGPT", color: "#1D9E75", initialSnap: "right" },
-  { id: "gemini", name: "Gemini", color: "#378ADD", initialSnap: "bottom-center" },
+  { id: "claude", name: "Llama 3.3 70B", color: "#7F77DD", initialX: 20, initialY: 80 },
+  { id: "chatgpt", name: "GPT-OSS 120B", color: "#1D9E75", initialX: 20, initialY: 300 },
+  { id: "gemini", name: "Groq Compound", color: "#378ADD", initialX: 20, initialY: 520 },
 ];
 
 export default function App() {
   const [prompt, setPrompt] = useState("");
+  const [showSynthesis, setShowSynthesis] = useState(false);
   const [responses, setResponses] = useState({});
   const [loading, setLoading] = useState(false);
   const [synthesis, setSynthesis] = useState(null);
@@ -35,20 +37,56 @@ export default function App() {
   const consensus = Object.keys(responses).length === 3 ? "high" : null;
 
   async function askModel(model, prompt, apiKey) {
-    const start = Date.now();
-    try {
-      const res = await fetch(WORKER_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, model, apiKey }),
-      });
-      const data = await res.json();
-      const elapsed = ((Date.now() - start) / 1000).toFixed(1);
-      return { text: data.text, elapsed };
-    } catch (e) {
-      return { text: "Bağlantı hatası", elapsed: "—" };
+  const start = Date.now();
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, model, apiKey }),
+    });
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = ''; // Yarım kalan verileri tutmak için buffer
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      // Yeni gelen parçayı buffer'a ekle
+      buffer += decoder.decode(value, { stream: true });
+
+      // Buffer'ı satırlara böl
+      const events = buffer.split('\n\n');
+buffer = events.pop() || '';
+      
+      
+
+      for (const event of events) {
+        const line = event.trim();
+        if (!line.startsWith('data:')) continue;
+        const data = line.slice(5).trim();
+        try {
+          const json = JSON.parse(data);
+          if (json.token) {
+            setResponses(r => ({
+              ...r,
+              [model]: (r[model] || '') + json.token
+            }));
+          }
+        } catch (e) {
+          console.error("JSON parse hatası:", data);
+        }
+      }
     }
+
+    const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+    return { elapsed };
+  } catch (e) {
+    setResponses(r => ({ ...r, [model]: 'Bağlantı hatası' }));
+    return { elapsed: '—' };
   }
+}
 
   async function handleAsk() {
     if (!prompt.trim() || !apiKeys) return;
@@ -61,11 +99,10 @@ export default function App() {
 
     const activeModels = MODELS.filter((m) => apiKeys[m.id]);
 
-    const promises = activeModels.map(async (m) => {
-      const result = await askModel(m.id, prompt, apiKeys[m.id]);
-      setResponses((r) => ({ ...r, [m.id]: result.text }));
-      setTimings((t) => ({ ...t, [m.id]: result.elapsed }));
-    });
+   const promises = activeModels.map(async (m) => {
+  const result = await askModel(m.id, prompt, apiKeys[m.id]);
+  setTimings((t) => ({ ...t, [m.id]: result.elapsed }));
+});
 
     await Promise.all(promises);
     setLoading(false);
@@ -75,14 +112,59 @@ export default function App() {
   async function handleSynthesize(modelId) {
     if (!responses[modelId]) return;
     setSynthModel(modelId);
-    setSynthesis(null);
+    setSynthesis('');
+    setShowSynthesis(true);
 
-    const synthPrompt = `Aşağıda aynı soruya verilen farklı AI cevapları var. Bunları analiz edip tek bir synthesis yap:\n\nSoru: ${prompt}\n\nCevaplar:\n${Object.entries(responses)
-      .map(([k, v]) => `${k}: ${v}`)
-      .join("\n\n")}\n\nKısa, net bir synthesis yaz.`;
+    const modelNames = { claude: 'Llama 3.3 70B', chatgpt: 'GPT-OSS 120B', gemini: 'Groq Compound' };
 
-    const result = await askModel(modelId, synthPrompt, apiKeys[modelId]);
-    setSynthesis(result.text);
+    const synthPrompt = `Sen bir AI hakem/analistsin. Aşağıda aynı soruya 3 farklı AI modelinin verdiği cevaplar var.
+
+GÖREV:
+1. Önce kısa bir ÖZET yaz — üç cevabın ortak noktalarını ve temel bulgularını birleştir.
+2. Sonra MODEL ANALİZİ yap — her modelin güçlü ve zayıf yönlerini belirt.
+3. Son olarak EN İYİ CEVAP değerlendirmesi yap — hangisi bu soruya en iyi cevap verdi ve neden?
+
+SORU: ${prompt}
+
+${Object.entries(responses).map(([id, text]) => `--- ${modelNames[id] || id} ---\n${text}`).join('\n\n')}
+
+Türkçe yaz. Markdown formatı kullan.`;
+
+    const start = Date.now();
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: synthPrompt, model: modelId, apiKey: apiKeys[modelId] }),
+      });
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split('\n\n');
+        buffer = events.pop() || '';
+
+        for (const event of events) {
+          const line = event.trim();
+          if (!line.startsWith('data:')) continue;
+          const data = line.slice(5).trim();
+          try {
+            const json = JSON.parse(data);
+            if (json.token) {
+              setSynthesis(prev => (prev || '') + json.token);
+            }
+          } catch {}
+        }
+      }
+    } catch (e) {
+      setSynthesis('Synthesis sırasında hata oluştu.');
+    }
   }
 
   function renderModelContent(modelId) {
@@ -103,15 +185,30 @@ export default function App() {
 
   return (
     <div className="maestro-root">
+            {showSynthesis && synthesis !== null && (
+        <div className="synth-modal-overlay" onClick={() => setShowSynthesis(false)}>
+          <div className="synth-modal" onClick={e => e.stopPropagation()}>
+            <button className="synth-modal-close" onClick={() => setShowSynthesis(false)}>✕</button>
+            <div className="synth-modal-header">
+              <span className="synth-modal-icon">∑</span>
+              <span>Synthesis</span>
+              {synthModel && (
+                <span className="synth-modal-by" style={{ color: MODELS.find(m => m.id === synthModel)?.color }}>
+                  — {MODELS.find(m => m.id === synthModel)?.name}
+                </span>
+              )}
+            </div>
+            <div className="synth-modal-body">
+              {synthesis ? <ReactMarkdown>{synthesis}</ReactMarkdown> : <span className="synth-loading">Analiz ediliyor...</span>}
+            </div>
+          </div>
+        </div>
+      )}
       <div className="bg-noise" />
       <div className="bg-glow" />
 
-      {/* Snap noktaları göstergesi */}
-      <div className="snap-guides">
-        <div className="snap-point" style={{ left: '15%', top: '35%' }} />
-        <div className="snap-point" style={{ left: '85%', top: '35%' }} />
-        <div className="snap-point" style={{ left: '50%', top: '85%' }} />
-      </div>
+      
+      
 
       {showModal && (
         <ApiKeyModal
@@ -150,76 +247,78 @@ export default function App() {
       )}
 
       {/* Sürüklenebilir Model Panelleri */}
-      {MODELS.map((model, idx) => (
-        <DraggablePanel
-          key={model.id}
-          id={model.id}
-          color={model.color}
-          label={model.name}
-          initialSnap={model.initialSnap}
-          zIndex={10 + idx}
-        >
+      
+       {MODELS.map((model, idx) => (
+ <DraggablePanel
+  key={model.id}
+  id={model.id}
+  color={model.color}
+  label={model.name}
+  initialX={model.initialX}
+  initialY={model.initialY}
+  zIndex={10 + idx}
+>
           {renderModelContent(model.id)}
         </DraggablePanel>
       ))}
 
       {/* Merkez: Karakter + Prompt */}
       <div className="center-fixed">
-        <div className={`char-wrap ${loading ? "conducting" : ""}`}>
-          <img src={maestroChar} alt="Maestro" className="char-img" />
-          <div className="char-glow" />
-        </div>
-
-        {asked && (
-          <div className={`consensus-badge ${consensus}`}>
+  {asked && (
+    <div className={`consensus-badge ${consensus}`}>
             {consensus === "high" ? "🟢 Yüksek Consensus" : "🔴 Görüşler Ayrışıyor"}
           </div>
         )}
 
-        <div className="prompt-area">
-          <textarea
-            className="prompt-input"
-            placeholder="Maestro'ya sor..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleAsk();
-              }
-            }}
-            rows={2}
-          />
-          <button className="ask-btn" onClick={handleAsk} disabled={loading}>
-            {loading ? "..." : "Sor"}
-          </button>
-        </div>
+        <div className="prompt-row">
+  <div className="prompt-area">
+    <textarea
+      className="prompt-input"
+      placeholder="Maestro'ya sor..."
+      value={prompt}
+      onChange={(e) => {
+        setPrompt(e.target.value);
+        e.target.style.height = 'auto';
+        e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          handleAsk();
+        }
+      }}
+      rows={1}
+    />
+    <button className="ask-btn" onClick={handleAsk} disabled={loading}>
+      {loading ? "..." : "SOR"}
+    </button>
+  </div>
+  <div className={`char-wrap ${loading ? "conducting" : ""}`}>
+    <img src={maestroChar} alt="Maestro" className="char-img" />
+    <div className="char-glow" />
+  </div>
+</div>
 
-        {asked && (
-          <div className="synthesis-area">
-            <div className="synthesis-label">Synthesis — hakem seç:</div>
-            <div className="synthesis-btns">
-              {MODELS.filter((m) => apiKeys?.[m.id]).map((m) => (
-                <button
-                  key={m.id}
-                  className={`synth-btn ${synthModel === m.id ? "active" : ""}`}
-                  style={{ "--c": m.color }}
-                  onClick={() => handleSynthesize(m.id)}
-                >
-                  {m.name}
-                </button>
-              ))}
-            </div>
-            {synthesis && (
-              <div className="synthesis-result">
-                <span className="synth-by" style={{ color: MODELS.find((m) => m.id === synthModel)?.color }}>
-                  {MODELS.find((m) => m.id === synthModel)?.name} diyor:
-                </span>
-                <p>{synthesis}</p>
-              </div>
-            )}
-          </div>
-        )}
+        {Object.keys(responses).length === MODELS.filter(m => apiKeys?.[m.id]).length && (
+  <button className="synthesis-trigger" onClick={() => setShowSynthesis(true)}>
+  ∑ Synthesis
+</button>
+)}
+{showSynthesis && !synthesis && (
+  <div className="synthesis-btns" style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+    {MODELS.filter((m) => apiKeys?.[m.id]).map((m) => (
+      <button
+        key={m.id}
+        className={`synth-btn ${synthModel === m.id ? "active" : ""}`}
+        style={{ "--c": m.color }}
+        onClick={() => handleSynthesize(m.id)}
+      >
+        {m.name}
+      </button>
+    ))}
+  </div>
+)}
+
       </div>
     </div>
   );
