@@ -9,7 +9,8 @@ import ReactMarkdown from 'react-markdown';
 const MODELS = [
   { id: "claude", name: "Llama 3.3 70B", color: "#7F77DD", initialX: 20, initialY: 80 },
   { id: "chatgpt", name: "GPT-OSS 120B", color: "#1D9E75", initialX: 20, initialY: 300 },
-  { id: "gemini", name: "Groq Compound", color: "#378ADD", initialX: 20, initialY: 520 },
+  { id: "gemini", name: "Llama 3.1 8B", color: "#378ADD", initialX: 20, initialY: 520 },
+
 ];
 
 export default function App() {
