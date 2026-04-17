@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import maestroChar from "./assets/miya.jpg";
 import ApiKeyModal from "./ApiKeyModal";
+import Sidebar from "./components/Sidebar";
 import DraggablePanel from "./components/DraggablePanel";
 import { WORKER_URL } from "./config";
 import "./App.css";
+import "./styles/Prompt.css";
 import ReactMarkdown from 'react-markdown';
 
 const MODELS = [
-  { id: "claude", name: "Llama 3.3 70B", color: "#7F77DD", initialX: 20, initialY: 80 },
-  { id: "chatgpt", name: "GPT-OSS 120B", color: "#1D9E75", initialX: 20, initialY: 300 },
-  { id: "gemini", name: "Llama 3.1 8B", color: "#378ADD", initialX: 20, initialY: 520 },
-
+  { id: "claude", name: "Llama 3.3 70B", color: "#7F77DD", initialX: 50, initialY: 20 },
+  { id: "chatgpt", name: "GPT-OSS 120B", color: "#1D9E75", initialX: 440, initialY: 20 },
+  { id: "gemini", name: "Llama 3.1 8B", color: "#378ADD", initialX: 830, initialY: 20 },
 ];
 
 export default function App() {
@@ -25,6 +26,8 @@ export default function App() {
   const [apiKeys, setApiKeys] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [timings, setTimings] = useState({});
+  const [sessionHistory, setSessionHistory] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("maestro_keys");
@@ -88,7 +91,16 @@ buffer = events.pop() || '';
     return { elapsed: '—' };
   }
 }
-
+function handleNewChat() {
+    setPrompt("");
+    setResponses({});
+    setSynthesis(null);
+    setSynthModel(null);
+    setAsked(false);
+    setTimings({});
+    setShowSynthesis(false);
+    setSessionHistory([]);
+  }
   async function handleAsk() {
     if (!prompt.trim() || !apiKeys) return;
     setLoading(true);
@@ -105,11 +117,53 @@ buffer = events.pop() || '';
   setTimings((t) => ({ ...t, [m.id]: result.elapsed }));
 });
 
-    await Promise.all(promises);
+  await Promise.all(promises);
     setLoading(false);
     setAsked(true);
+    setSessionHistory(prev => [...prev, {
+      timestamp: new Date().toISOString(),
+      prompt,
+    }]);
   }
+function exportACTP() {
+    const session = {
+      actp_version: "0.2",
+      created_at: new Date().toISOString(),
+      project: {
+        name: "Maestro Session",
+        description: "Multi-model AI orchestration session"
+      },
+      session: {
+        started_at: sessionHistory[0]?.timestamp || new Date().toISOString(),
+        ended_at: new Date().toISOString(),
+        queries: sessionHistory.map((entry, i) => ({
+          order: i + 1,
+          timestamp: entry.timestamp,
+          prompt: entry.prompt,
+          model_responses: Object.entries(responses).map(([id, text]) => ({
+            model: MODELS.find(m => m.id === id)?.name || id,
+            response: text,
+            response_time: timings[id] ? `${timings[id]}s` : null,
+          })),
+        })),
+        synthesis: synthesis ? {
+          judge_model: MODELS.find(m => m.id === synthModel)?.name || synthModel,
+          result: synthesis,
+        } : null,
+      },
+      decisions: [],
+      open_questions: [],
+      next_steps: [],
+    };
 
+    const blob = new Blob([JSON.stringify(session, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `maestro-session-${new Date().toISOString().slice(0, 10)}.actp`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
   async function handleSynthesize(modelId) {
     if (!responses[modelId]) return;
     setSynthModel(modelId);
@@ -185,7 +239,7 @@ Türkçe yaz. Markdown formatı kullan.`;
   }
 
   return (
-    <div className="maestro-root">
+    <div className={`maestro-root ${sidebarOpen ? "sidebar-open" : ""}`}>
             {showSynthesis && synthesis !== null && (
         <div className="synth-modal-overlay" onClick={() => setShowSynthesis(false)}>
           <div className="synth-modal" onClick={e => e.stopPropagation()}>
@@ -220,7 +274,13 @@ Türkçe yaz. Markdown formatı kullan.`;
         />
       )}
 
-      <button className="settings-btn" onClick={() => setShowModal(true)}>⚙</button>
+            <Sidebar
+        isOpen={sidebarOpen}
+        setIsOpen={setSidebarOpen}
+        onNewChat={handleNewChat}
+        onExportSession={exportACTP}
+        onOpenSettings={() => setShowModal(true)}
+      />
 
       {asked && (
         <button

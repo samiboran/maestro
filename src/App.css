@@ -97,38 +97,10 @@
   text-transform: uppercase;
   margin: 0;
 }
-.prompt-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 1rem;
-  width: 100%;
-}
 
-.prompt-row .char-wrap {
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
-}
-
-.prompt-row .char-img {
-  width: 56px;
-  height: 56px;
-}
 /* ===== CENTER FIXED ===== */
 
-.center-fixed {
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.25rem;
-  z-index: 5;
-  width: 720px;
-  max-width: 90vw;
-}
+
 
 body {
   background: var(--bg);
@@ -137,7 +109,6 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
-
 .maestro-root {
   min-height: 100vh;
   position: relative;
@@ -267,12 +238,7 @@ body {
 }
 
 /* Prompt — Claude benzeri geniş ve auto-resize */
-.prompt-area {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
+
 .synthesis-trigger {
   background: rgba(154,122,74,0.08);
   border: 1px solid rgba(154,122,74,0.3);
@@ -339,35 +305,9 @@ body {
   box-shadow: 0 4px 24px rgba(154,122,74,0.12);
 }
 
-.prompt-area {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  position: relative;
-}
 
-.ask-btn {
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  background: var(--gold);
-  border: none;
-  color: #fff;
-  font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.15em;
-  padding: 0.5rem 1.2rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  border-radius: 20px;
-  box-shadow: 0 2px 8px rgba(154,122,74,0.2);
-}
-.ask-btn:hover:not(:disabled) {
-  background: #8a6a3a;
-  box-shadow: 0 4px 12px rgba(154,122,74,0.3);
-}
-.ask-btn:disabled { opacity: 0.5; cursor: default; }
+
+
 
 /* Synthesis */
 .synthesis-area {
@@ -701,4 +641,118 @@ body {
 @keyframes blink {
   0%, 100% { opacity: 0.2; }
   50% { opacity: 1; }
+}
+.session-end-btn {
+  position: fixed;
+  top: 16px;
+  left: 80px;
+  background: #f5f0e8;
+  border: 1px solid #d4cbb8;
+  color: #1a1a1a;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  z-index: 1000;
+  transition: background 0.2s;
+}
+
+.session-end-btn:hover {
+  background: #e8e0d0;
+}
+/* ── Sidebar ── */
+.sidebar-toggle {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #d4cbb8;
+  color: #1a1a1a;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -240px;
+  width: 240px;
+  height: 100vh;
+  background: #f5f0e8;
+  border-right: 1px solid #d4cbb8;
+  z-index: 1500;
+  transition: left 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  padding-top: 56px;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar-header {
+  padding: 0 16px 16px;
+  border-bottom: 1px solid #d4cbb8;
+}
+
+.sidebar-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 2px;
+}
+
+.sidebar-item {
+  background: none;
+  border: none;
+  color: #1a1a1a;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.sidebar-item:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* Sidebar açıkken içerik kaydır */
+.maestro-root.sidebar-open .center-fixed,
+.maestro-root.sidebar-open .draggable-panel,
+.maestro-root.sidebar-open .orchestration-toggle,
+.maestro-root.sidebar-open .orchestration-panel {
+  margin-left: 240px;
+  transition: margin-left 0.25s ease;
+}
+
+/* ── Panel scroll ve font düzeltmeleri ── */
+.panel-content {
+  overflow-y: auto;
+  max-height: calc(100% - 32px);
+  padding: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.model-response {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
 }

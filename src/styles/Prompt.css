@@ -1,0 +1,98 @@
+/* ── Prompt Area ── */
+.center-fixed {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  z-index: 5;
+  width: 720px;
+  max-width: 90vw;
+  overflow: hidden;
+}
+
+.prompt-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  width: 100%;
+}
+
+.prompt-row .char-wrap {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.prompt-row .char-img {
+  width: 56px;
+  height: 56px;
+}
+
+.prompt-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.prompt-input {
+  width: 100%;
+  min-height: 56px;
+  max-height: 200px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.05rem;
+  font-weight: 300;
+  padding: 1rem 1.5rem;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  line-height: 1.6;
+  border-radius: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  overflow-y: hidden;
+  padding-right: 6rem;
+}
+
+.prompt-input::placeholder {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.prompt-input:focus {
+  border-color: rgba(154,122,74,0.4);
+  box-shadow: 0 4px 24px rgba(154,122,74,0.12);
+}
+
+.ask-btn {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  background: #7a9a5a;
+  border: none;
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(122,154,90,0.2);
+}
+
+.ask-btn:hover:not(:disabled) {
+  background: #6b8a4d;
+}
+
+.ask-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
