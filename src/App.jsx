@@ -150,25 +150,24 @@ const modelNames = Object.fromEntries(activeModels.map(m => [m.id, m.name]));
 
 const parts = activeModels
   .filter(m => modelResponses[m.id])
-  .map(m => {
-    const label = m.id === judgeModel.id 
-      ? `${modelNames[m.id]} (SENİN CEVABIN)` 
-      : modelNames[m.id];
-    return `--- ${label} ---\n${modelResponses[m.id]}`;
-  })
+  .map((m, i) => `--- KAYNAK_${i + 1} ---\n${modelResponses[m.id]}`)
   .join("\n\n");
 
-const synthPrompt = `Aşağıda aynı soruya farklı AI modellerinden gelen yanıtlar var.
+const synthPrompt = `Sen bağımsız bir Sentez Editörüsün. Aşağıda aynı soruya 3 farklı kaynaktan gelen yanıtlar var.
 
 Kurallar:
+- Sana sunulan 3 adet bağımsız KAYNAK metnini sentezle
+- Asla "her iki model" deme, her zaman "3 yanıt" veya "tüm kaynaklar" kullan
 - Selamlama ve dolgu cümlelerini yoksay
-- Aşağıda 3 modelin cevabı var, hepsini değerlendir (sen de dahilsin)
-- Modeller aynı şeyi söylüyorsa bir kez yaz
-- Modeller arasında teknik çelişki varsa MUTLAKA belirt ve hangi model(ler) hatalı olduğunu söyle
+- Kaynaklar aynı şeyi söylüyorsa bir kez yaz
+- Kaynaklar arasında teknik çelişki varsa MUTLAKA belirt
 - Kritik hatalar varsa öne çıkar
 - Teknik sorularda en doğru kodu öne çıkar
 - Giriş cümlesi yazma, direkt cevaba gir
 - Cevabı Türkçe ver
+
+Örnek doğru kullanım: "İncelenen 3 yanıta göre..." ✅
+Örnek yanlış kullanım: "Her iki modele göre..." ❌
 
 SORU: ${userPrompt}
 
