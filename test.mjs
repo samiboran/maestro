@@ -4,7 +4,7 @@
 
 import fs from "fs";
 
-const API_KEY = "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"; // gsk_xxx
+const API_KEY = process.env.GROQ_API_KEY || ""; // gsk_xxx
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 const MODELS = [
