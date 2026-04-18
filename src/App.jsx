@@ -64,7 +64,7 @@ export default function App() {
       const res = await fetch(WORKER_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: promptText, model: modelId, apiKey }),
+        body: JSON.stringify({ prompt: promptText, model: modelId, apiKey, judgeKey: apiKeys?.judgeKey || "" }),
       });
 
       const reader = res.body.getReader();
@@ -130,8 +130,23 @@ export default function App() {
     setThinkingPhase(2);
 
     // Pick judge model — use first model that has a response
-    const judgeModel = activeModels.find((m) => modelResponses[m.id]?.length > 0);
-    if (!judgeModel) {
+    if (!apiKeys.judgeKey) {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          role: "maestro",
+          content: "Cerebras API key girilmemiş. Lütfen API ayarlarından judge key'i girin.",
+          modelResponses: {},
+          timings: {},
+          models: activeModels,
+        },
+      ]);
+      setChatLoading(false);
+      return;
+    }
+
+    const hasAnyResponse = activeModels.some((m) => modelResponses[m.id]?.length > 0);
+    if (!hasAnyResponse) {
       setChatMessages((prev) => [
         ...prev,
         {
@@ -193,7 +208,7 @@ Markdown formatı kullan.`;
     ]);
     setChatLoading(false);
 
-    await streamModel(judgeModel.id, synthPrompt, apiKeys[judgeModel.id], (token) => {
+    await streamModel("judge", synthPrompt, apiKeys.judgeKey, (token) => {
       synthText += token;
       setChatMessages((prev) => {
         const updated = [...prev];

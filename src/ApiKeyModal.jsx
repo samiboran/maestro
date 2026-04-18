@@ -2,6 +2,7 @@ import { useState } from "react";
 
 export default function ApiKeyModal({ onSave, onSkip }) {
   const [groqKey, setGroqKey] = useState("");
+  const [cerebrasKey, setCerebrasKey] = useState("");
 
   function handleSave() {
     if (!groqKey.trim()) return;
@@ -9,13 +10,14 @@ export default function ApiKeyModal({ onSave, onSkip }) {
       claude: groqKey,
       chatgpt: groqKey,
       gemini: groqKey,
+      judgeKey: cerebrasKey.trim() || "",
     };
     localStorage.setItem("maestro_keys", JSON.stringify(keys));
     onSave(keys);
   }
 
   function handleSkip() {
-    const emptyKeys = { claude: "", chatgpt: "", gemini: "" };
+    const emptyKeys = { claude: "", chatgpt: "", gemini: "", judgeKey: "" };
     localStorage.setItem("maestro_keys", JSON.stringify(emptyKeys));
     if (onSkip) onSkip();
     else onSave(emptyKeys);
@@ -36,23 +38,40 @@ export default function ApiKeyModal({ onSave, onSkip }) {
           ✕
         </button>
 
-        <h2 className="modal-title">Groq API Key</h2>
+        <h2 className="modal-title">API Ayarları</h2>
         <p className="modal-sub">
-          console.groq.com adresinden ücretsiz key alabilirsin.
-          <br />
-          Llama 4 Scout, GPT OSS 120B ve Qwen 3 32B modelleri bu key ile çalışır.
+          İki API key gerekiyor — ikisi de ücretsiz.
         </p>
 
         <div className="key-field">
           <label className="key-label" style={{ color: "#9a7a4a" }}>
             Groq API Key
           </label>
+          <p style={{ fontSize: "0.75rem", color: "#6b7280", margin: "0 0 0.5rem" }}>
+            console.groq.com — 3 model için (Llama 4 Scout, GPT OSS 120B, Qwen 3 32B)
+          </p>
           <input
             type="password"
             className="key-input"
             placeholder="gsk_..."
             value={groqKey}
             onChange={(e) => setGroqKey(e.target.value)}
+          />
+        </div>
+
+        <div className="key-field" style={{ marginTop: "1rem" }}>
+          <label className="key-label" style={{ color: "#7F77DD" }}>
+            Cerebras API Key (Judge)
+          </label>
+          <p style={{ fontSize: "0.75rem", color: "#6b7280", margin: "0 0 0.5rem" }}>
+            cloud.cerebras.ai — Qwen 3 235B sentez hakemi
+          </p>
+          <input
+            type="password"
+            className="key-input"
+            placeholder="csk-..."
+            value={cerebrasKey}
+            onChange={(e) => setCerebrasKey(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSave()}
           />
         </div>
