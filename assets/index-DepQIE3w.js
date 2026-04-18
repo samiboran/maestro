@@ -37,7 +37,7 @@ Kurallar:
 
 SORU: ${r}
 
-${Object.entries(a).filter(([,e])=>e).map(([e,t])=>`### ${l[e]||e}\n${t}`).join(`
+${i.filter(e=>a[e.id]).map(e=>`--- ${e.id===c.id?`${l[e.id]} (SENİN CEVABIN)`:l[e.id]} ---\n${a[e.id]}`).join(`
 
 `)}
 
