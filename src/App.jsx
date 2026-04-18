@@ -246,7 +246,7 @@ Markdown formatı kullan.`;
     setSynthesis("");
     setShowSynthesis(true);
 
-    const modelNames = { claude: "Llama 3.3 70B", chatgpt: "GPT-OSS 120B", gemini: "Llama 3.1 8B" };
+    const modelNames = Object.fromEntries(MODELS.map(m => [m.id, m.name]));
 
     const synthPrompt = `Sen bir AI hakem/analistsin. Aşağıda aynı soruya 3 farklı AI modelinin verdiği cevaplar var.
 
