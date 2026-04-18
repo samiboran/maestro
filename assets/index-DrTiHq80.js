@@ -27,8 +27,9 @@ Error generating stack: `+e.message+`
 
 Kurallar:
 - Selamlama ve dolgu cümlelerini yoksay
+- Aşağıda 3 modelin cevabı var, hepsini değerlendir (sen de dahilsin)
 - Modeller aynı şeyi söylüyorsa bir kez yaz
-- Modeller arasında teknik çelişki varsa MUTLAKA belirt
+- Modeller arasında teknik çelişki varsa MUTLAKA belirt ve hangi model(ler) hatalı olduğunu söyle
 - Kritik hatalar varsa öne çıkar
 - Teknik sorularda en doğru kodu öne çıkar
 - Giriş cümlesi yazma, direkt cevaba gir
