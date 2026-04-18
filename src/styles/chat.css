@@ -1,0 +1,498 @@
+/* ══════════════════════════════════════
+   CHAT MODE STYLES
+   ══════════════════════════════════════ */
+
+.chat-view, .chat-view * { text-align: left !important; }
+/* Chat View Container */
+.chat-view,
+.chat-view * {
+  text-align: left !important;
+}
+.chat-view {
+  /* Mevcut kuralların kalsın, bunları ekle veya güncelle */
+  max-width: 720px;
+  margin: 0 auto;
+  padding-bottom: 220px; /* Alttan daha fazla boşluk */
+  
+  /* Prompt kutusuna yaklaştıkça metni %50 solduran maske */
+  mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black 80%,
+    rgba(0, 0, 0, 0.5) 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black 80%,
+    rgba(0, 0, 0, 0.5) 95%,
+    transparent 100%
+  );
+}
+
+.chat-messages {
+  margin-top: 40px; /* Üstteki başlık ile mesajlar arasına nefes alacak alan */
+}
+
+/* Başlık alanını daha belirgin yapmak istersen (Görseldeki üst metin için) */
+
+.chat-bubble-header {
+  margin-bottom: 2rem;
+  padding-top: 10px;
+}
+
+/* Welcome Screen */
+.chat-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+  animation: fadeIn 0.6s ease;
+}
+
+.chat-welcome-icon {
+  font-size: 2.5rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.chat-welcome-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.chat-welcome-sub {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.1rem;
+  color: var(--muted);
+  font-weight: 300;
+  font-style: italic;
+}
+
+/* ── Chat Bubbles ── */
+.chat-bubble {
+  animation: fadeIn 0.4s ease;
+  text-align: left;
+}
+
+/* User bubble */
+.chat-bubble.user {
+  align-self: flex-end;
+  max-width: 85%;
+  background: rgba(154, 122, 74, 0.08);
+  border-radius: 18px 18px 4px 18px;
+  padding: 0.9rem 1.25rem;
+}
+
+.chat-bubble.user p {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0;
+}
+
+/* Maestro bubble — NO visible borders */
+.chat-bubble.maestro {
+  max-width: 100%;
+  padding: 0.5rem 0;
+}
+
+.chat-bubble-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.chat-bubble-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.chat-bubble-meta {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+/* ── Response content — left aligned ── */
+.chat-bubble-content {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--text);
+  font-weight: 300;
+  text-align: left;
+}
+
+.chat-bubble-content h1,
+.chat-bubble-content h2,
+.chat-bubble-content h3 {
+  font-family: 'Cinzel', serif;
+  font-weight: 400;
+  margin-top: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+  text-align: left;
+}
+
+.chat-bubble-content h2 { font-size: 1.05rem; }
+.chat-bubble-content h3 { font-size: 0.95rem; }
+
+.chat-bubble-content p {
+  margin-bottom: 0.6rem;
+  text-align: left;
+}
+
+.chat-bubble-content ul,
+.chat-bubble-content ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+  text-align: left;
+}
+
+.chat-bubble-content li {
+  margin-bottom: 0.3rem;
+}
+
+.chat-bubble-content code {
+  background: rgba(0, 0, 0, 0.04);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.chat-bubble-content pre {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+
+.chat-bubble-content pre code {
+  background: none;
+  padding: 0;
+}
+
+.chat-bubble-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.85rem;
+}
+
+.chat-bubble-content th,
+.chat-bubble-content td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.chat-bubble-content th {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.chat-bubble-content strong {
+  font-weight: 500;
+}
+
+/* Buton Kapsayıcısını Sol Alta Hizala */
+.chat-actions {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  justify-content: flex-start; /* Yazının sol altına çektik */
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.chat-actions:hover {
+  opacity: 1; /* Alana yaklaşınca belirginleşsin */
+}
+
+/* Fütüristik Buton Tasarımı */
+.chat-action-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: 'Cinzel', serif; /* Maestro stili font */
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Üzerine Gelince Yanıp Sönme/Parlama Efekti */
+.chat-action-btn:hover {
+  color: var(--gold);
+  text-shadow: 0 0 8px rgba(154, 122, 74, 0.5); /* Hafif altın parlaması */
+  transform: translateY(-1px);
+}
+
+.chat-action-btn:active {
+  transform: scale(0.95);
+}
+
+/* ── Model Toggle ── */
+.model-toggle-area {
+  margin-top: 0.5rem;
+}
+
+.model-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  padding: 0.3rem 0;
+  transition: color 0.2s;
+}
+
+.model-toggle-btn:hover {
+  color: var(--gold);
+}
+
+/* ── Model Accordion ── */
+.model-responses-accordion {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.model-accordion-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  border-left: 3px solid var(--mc);
+}
+
+.model-accordion-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  color: var(--text);
+  transition: background 0.15s;
+}
+
+.model-accordion-header:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.model-accordion-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mc);
+  flex-shrink: 0;
+}
+
+.model-accordion-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mc);
+}
+
+.model-accordion-time {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.model-accordion-arrow {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-left: 0.25rem;
+}
+
+.model-accordion-body {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--text);
+  font-weight: 300;
+  max-height: 300px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.model-accordion-body p {
+  margin-bottom: 0.4rem;
+}
+
+/* ── Thinking Indicator ── */
+.thinking-indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.thinking-step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  color: var(--muted);
+  opacity: 0.4;
+  transition: all 0.3s ease;
+}
+
+.thinking-step.active {
+  opacity: 1;
+  color: var(--gold);
+}
+
+.thinking-step.done {
+  opacity: 0.6;
+  color: var(--chatgpt);
+}
+
+.thinking-icon {
+  font-size: 0.9rem;
+  margin-right: 6px;
+  width: 1.2rem;
+  text-align: center;
+}
+
+.thinking-label {
+  font-weight: 300;
+}
+
+.thinking-dots {
+  display: flex;
+  gap: 5px;
+  padding-top: 0.25rem;
+  padding-left: 1.7rem;
+}
+
+/* ── Sidebar Mode Toggle ── */
+.sidebar-mode-toggle {
+  display: flex;
+  gap: 2px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.03);
+  margin: 0 8px 4px;
+  border-radius: 8px;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 8px 6px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.mode-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.mode-btn.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  font-weight: 500;
+}
+
+/* ── Chat Mode Prompt — fixed bottom with backdrop ── */
+.mode-chat .center-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  top: auto;
+  width: 720px;
+  max-width: 90vw;
+  padding: 1rem 0 1.5rem;
+  z-index: 50;
+  background: linear-gradient(to top, var(--bg) 70%, transparent 100%);
+}
+
+.mode-chat .center-fixed .consensus-badge,
+.mode-chat .center-fixed .char-wrap,
+.mode-chat .center-fixed .synthesis-trigger,
+.mode-chat .center-fixed .synthesis-btns {
+  display: none;
+}
+
+.mode-chat .prompt-row {
+  justify-content: center;
+}
+
+.mode-chat .prompt-area {
+  width: 100%;
+}
+
+/* ── Sidebar open adjustments for chat mode ── */
+.maestro-root.sidebar-open.mode-chat .chat-view {
+  margin-left: 240px;
+  transition: margin-left 0.25s ease;
+}
+
+.maestro-root.sidebar-open.mode-chat .center-fixed {
+  margin-left: 120px;
+  transition: margin-left 0.25s ease;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .chat-view {
+    padding: 1rem;
+    padding-bottom: 160px;
+  }
+
+  .mode-chat .center-fixed {
+    width: 100%;
+    padding: 0.5rem 1rem 1rem;
+  }
+
+  .chat-bubble.user {
+    max-width: 90%;
+  }
+
+  .sidebar-mode-toggle {
+    flex-direction: column;
+  }
+}
