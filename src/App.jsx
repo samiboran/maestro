@@ -148,9 +148,14 @@ export default function App() {
 
 const modelNames = Object.fromEntries(activeModels.map(m => [m.id, m.name]));
 
-const parts = Object.entries(modelResponses)
-  .filter(([, v]) => v)
-  .map(([id, text]) => `### ${modelNames[id] || id}\n${text}`)
+const parts = activeModels
+  .filter(m => modelResponses[m.id])
+  .map(m => {
+    const label = m.id === judgeModel.id 
+      ? `${modelNames[m.id]} (SENİN CEVABIN)` 
+      : modelNames[m.id];
+    return `--- ${label} ---\n${modelResponses[m.id]}`;
+  })
   .join("\n\n");
 
 const synthPrompt = `Aşağıda aynı soruya farklı AI modellerinden gelen yanıtlar var.
