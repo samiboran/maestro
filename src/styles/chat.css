@@ -3,18 +3,11 @@
    ══════════════════════════════════════ */
 
 .chat-view, .chat-view * { text-align: left !important; }
-/* Chat View Container */
-.chat-view,
-.chat-view * {
-  text-align: left !important;
-}
+
 .chat-view {
-  /* Mevcut kuralların kalsın, bunları ekle veya güncelle */
   max-width: 720px;
   margin: 0 auto;
-  padding-bottom: 220px; /* Alttan daha fazla boşluk */
-  
-  /* Prompt kutusuna yaklaştıkça metni %50 solduran maske */
+  padding-bottom: 220px;
   mask-image: linear-gradient(
     to bottom,
     black 0%,
@@ -32,10 +25,8 @@
 }
 
 .chat-messages {
-  margin-top: 40px; /* Üstteki başlık ile mesajlar arasına nefes alacak alan */
+  margin-top: 40px;
 }
-
-/* Başlık alanını daha belirgin yapmak istersen (Görseldeki üst metin için) */
 
 .chat-bubble-header {
   margin-bottom: 2rem;
@@ -83,7 +74,6 @@
   text-align: left;
 }
 
-/* User bubble */
 .chat-bubble.user {
   align-self: flex-end;
   max-width: 85%;
@@ -100,11 +90,6 @@
   margin: 0;
 }
 
-/* Maestro bubble — NO visible borders */
-.chat-bubble.maestro {
-  max-width: 100%;
-  padding: 0.5rem 0;
-}
 
 .chat-bubble-header {
   display: flex;
@@ -128,7 +113,7 @@
   font-weight: 300;
 }
 
-/* ── Response content — left aligned ── */
+/* ── Response content ── */
 .chat-bubble-content {
   font-family: 'Crimson Pro', serif;
   font-size: 0.95rem;
@@ -211,26 +196,25 @@
   font-weight: 500;
 }
 
-/* Buton Kapsayıcısını Sol Alta Hizala */
+/* ── Actions ── */
 .chat-actions {
   display: flex;
   gap: 1.5rem;
   margin-top: 1rem;
-  justify-content: flex-start; /* Yazının sol altına çektik */
+  justify-content: flex-start;
   opacity: 0.7;
   transition: opacity 0.3s ease;
 }
 
 .chat-actions:hover {
-  opacity: 1; /* Alana yaklaşınca belirginleşsin */
+  opacity: 1;
 }
 
-/* Fütüristik Buton Tasarımı */
 .chat-action-btn {
   background: none;
   border: none;
   color: var(--muted);
-  font-family: 'Cinzel', serif; /* Maestro stili font */
+  font-family: 'Cinzel', serif;
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   display: flex;
@@ -244,10 +228,9 @@
   overflow: hidden;
 }
 
-/* Üzerine Gelince Yanıp Sönme/Parlama Efekti */
 .chat-action-btn:hover {
   color: var(--gold);
-  text-shadow: 0 0 8px rgba(154, 122, 74, 0.5); /* Hafif altın parlaması */
+  text-shadow: 0 0 8px rgba(154, 122, 74, 0.5);
   transform: translateY(-1px);
 }
 
@@ -402,41 +385,7 @@
   padding-left: 1.7rem;
 }
 
-/* ── Sidebar Mode Toggle ── */
-.sidebar-mode-toggle {
-  display: flex;
-  gap: 2px;
-  padding: 8px;
-  background: rgba(0, 0, 0, 0.03);
-  margin: 0 8px 4px;
-  border-radius: 8px;
-}
-
-.mode-btn {
-  flex: 1;
-  padding: 8px 6px;
-  background: none;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.78rem;
-  cursor: pointer;
-  color: var(--muted);
-  transition: all 0.2s;
-  text-align: center;
-}
-
-.mode-btn:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-.mode-btn.active {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  font-weight: 500;
-}
-
-/* ── Chat Mode Prompt — fixed bottom with backdrop ── */
+/* ── Chat Mode Prompt — fixed bottom ── */
 .mode-chat .center-fixed {
   position: fixed;
   bottom: 0;
@@ -465,17 +414,6 @@
   width: 100%;
 }
 
-/* ── Sidebar open adjustments for chat mode ── */
-.maestro-root.sidebar-open.mode-chat .chat-view {
-  margin-left: 240px;
-  transition: margin-left 0.25s ease;
-}
-
-.maestro-root.sidebar-open.mode-chat .center-fixed {
-  margin-left: 120px;
-  transition: margin-left 0.25s ease;
-}
-
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .chat-view {
@@ -490,9 +428,5 @@
 
   .chat-bubble.user {
     max-width: 90%;
-  }
-
-  .sidebar-mode-toggle {
-    flex-direction: column;
   }
 }

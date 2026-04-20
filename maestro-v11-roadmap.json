@@ -1,0 +1,98 @@
+{
+  "version": "1.1",
+  "codename": "Hakemlik Güncellemesi",
+  "timeline": "1 hafta (10-12 saat)",
+  "principle": "Sıfır maliyet, basitlik, tek geliştirici hızı",
+
+  "roadmap": [
+    {
+      "priority": 1,
+      "feature": "Memory (Session Hafızası)",
+      "effort": "1 gün",
+      "description": "localStorage ile sohbet geçmişi, kullanıcı tercihleri ve son konular saklanır. Maestro'yu 'asistan' hissine kavuşturur.",
+      "implementation": {
+        "storage_key": "maestro_memory",
+        "data": {
+          "chats": "Son 10 sohbet (soru + sentez özeti)",
+          "preferences": "Tercih edilen mod, dil, ton",
+          "facts": "Kullanıcı hakkında öğrenilen bilgiler (opsiyonel)"
+        },
+        "ui": "Sidebar'da 'Geçmiş Sohbetler' bölümü, tıklayınca tekrar yükle"
+      },
+      "impact": "Tekrar kullanım oranı artar, disposable hissi kalkar"
+    },
+    {
+      "priority": 2,
+      "feature": "Confidence Layer (Güven Katmanı)",
+      "effort": "1 gün",
+      "description": "Judge sentez yaparken modellerin ne kadar hemfikir olduğunu analiz eder ve görsel gösterge sunar.",
+      "implementation": {
+        "levels": [
+          { "icon": "🟢", "label": "Yüksek Güven", "condition": "3 model aynı fikirde" },
+          { "icon": "🟡", "label": "Kısmi Uyum", "condition": "2 model uyumlu, 1 farklı" },
+          { "icon": "🔴", "label": "Çelişki Var", "condition": "Modeller farklı cevaplar verdi" }
+        ],
+        "where": "Sentez mesajının üstünde badge olarak gösterilir",
+        "how": "Judge prompt'una 'modeller arasındaki uyumu 1-10 puanla' eklenir, JSON olarak döner"
+      },
+      "impact": "Maestro'yu rakiplerinden ayıran KİLLER özellik — kullanıcı cevaba ne kadar güvenebileceğini bilir"
+    },
+    {
+      "priority": 3,
+      "feature": "Mode Sadeleştirme (Chat-First)",
+      "effort": "yarım gün",
+      "description": "Chat varsayılan mod olur. Orkestrasyon 'Debug Mode' olarak gizlenir. Otonom 'Beta' etiketi alır.",
+      "implementation": {
+        "sidebar_changes": [
+          "Chat → ana mod, varsayılan",
+          "Orkestrasyon → 'Debug' etiketi, alt menüde",
+          "Otonom → 'Beta' etiketi"
+        ],
+        "orchestration_access": "Sidebar'da 'Gelişmiş' başlığı altına taşınır veya gizle/göster toggle"
+      },
+      "impact": "Yeni kullanıcı karışıklığı azalır, odak netleşir"
+    },
+    {
+      "priority": 4,
+      "feature": "Share / Export (Paylaşım ve Dışa Aktarım)",
+      "effort": "1 gün",
+      "description": "Sentez sonucunu Markdown olarak indir veya paylaşılabilir link oluştur.",
+      "implementation": {
+        "markdown_export": "Blob + download — tek buton",
+        "share_link": "Base64 encode → URL hash — sunucu gerektirmez",
+        "ui": "Sentez mesajının altında 'Paylaş' ve 'İndir' butonları"
+      },
+      "impact": "Viral büyüme başlar — kullanıcılar sonuçları paylaşır"
+    },
+    {
+      "priority": 5,
+      "feature": "Rate Limit Fallback (Akıllı Yedekleme)",
+      "effort": "1 gün",
+      "description": "Bir model rate limit'e takılırsa otomatik olarak yedek modele geçer veya kullanıcıyı uyarır.",
+      "implementation": {
+        "detection": "HTTP 429 veya boş response kontrolü",
+        "fallback_strategy": "Groq model başarısız → diğer Groq modeli dene, hepsi başarısız → sadece Judge ile cevap ver",
+        "ui": "Sarı uyarı badge: 'Model X geçici olarak kullanılamıyor, yedek model kullanıldı'"
+      },
+      "impact": "Kesintisiz deneyim — kullanıcı API limitlerinden etkilenmez"
+    }
+  ],
+
+  "post_v11_ideas": [
+    "Smart Model Routing (soruya göre model seçimi)",
+    "Explain Differences (model cevapları fark analizi)",
+    "Meta-Prompting (soruya göre otomatik system prompt)",
+    "Autonomy Slider (5 seviye otonomi kontrolü)",
+    "Prompt Presets (hazır soru şablonları)",
+    "PWA + Offline destek"
+  ],
+
+  "do_NOT_build": [
+    "Database (PostgreSQL, MongoDB vs.)",
+    "Auth sistemi (OAuth, login)",
+    "148+ tool entegrasyonu",
+    "Docker / self-hosting",
+    "Mobil uygulama",
+    "Mikro-servis mimarisi"
+  ]
+}

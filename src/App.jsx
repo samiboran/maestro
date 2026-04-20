@@ -7,22 +7,36 @@ import ChatView from "./components/ChatView";
 import { WORKER_URL } from "./config";
 import "./App.css";
 import "./styles/Prompt.css";
+import "./styles/autonomous.css";
+import "./orchestrator-animations.css";
 import ReactMarkdown from "react-markdown";
 
+// ── Otonom mod importları ──
+import AutonomousMode from "./modes/AutonomousMode.jsx";
+import { OrchestratorProvider } from "./orchestrator/OrchestratorContext.jsx";
+import useMemory from "./useMemory.js";
+
+// FIX #5: provider bilgisi MODELS içine taşındı
 const MODELS = [
-  { id: "claude",  name: "Llama 4 Scout",  color: "#7F77DD", initialX: 50,  initialY: 20 },
-  { id: "chatgpt", name: "GPT OSS 120B",   color: "#1D9E75", initialX: 440, initialY: 20 },
-  { id: "gemini",  name: "Qwen 3 32B",     color: "#378ADD", initialX: 830, initialY: 20 },
+  { id: "claude",  provider: "groq-llama4", name: "Llama 4 Scout",  color: "#7F77DD", initialX: 50,  initialY: 20 },
+  { id: "chatgpt", provider: "groq-gptoss", name: "GPT OSS 120B",   color: "#1D9E75", initialX: 440, initialY: 20 },
+  { id: "gemini",  provider: "groq-qwen3",  name: "Qwen 3 32B",     color: "#378ADD", initialX: 830, initialY: 20 },
 ];
 
+// FIX #3: Mesaj ID üretici — race condition önleme
+let nextMsgId = 1;
+function genMsgId() { return `msg-${Date.now()}-${nextMsgId++}`; }
+
 export default function App() {
+
   const [prompt, setPrompt] = useState("");
   const [apiKeys, setApiKeys] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Mode: "chat" (default) or "orchestration" (advanced)
-  const [mode, setMode] = useState("chat");
+  // Mode: "chat" | "orchestration" | "autonomous"
+  const { chats, saveChat, loadChat, deleteChat, clearAllChats, setPref, getPref } = useMemory();
+const [mode, setMode] = useState(() => getPref('defaultMode', 'chat'));
 
   // ── Chat mode state ──
   const [chatMessages, setChatMessages] = useState([]);
@@ -30,7 +44,7 @@ export default function App() {
   const [thinkingPhase, setThinkingPhase] = useState(0);
   const chatEndRef = useRef(null);
 
-  // ── Orchestration mode state (eski davranış) ──
+  // ── Orchestration mode state ──
   const [responses, setResponses] = useState({});
   const [loading, setLoading] = useState(false);
   const [synthesis, setSynthesis] = useState(null);
@@ -40,6 +54,7 @@ export default function App() {
   const [asked, setAsked] = useState(false);
   const [timings, setTimings] = useState({});
   const [sessionHistory, setSessionHistory] = useState([]);
+  
 
   useEffect(() => {
     const saved = localStorage.getItem("maestro_keys");
@@ -58,6 +73,7 @@ export default function App() {
   const consensus = Object.keys(responses).length === 3 ? "high" : null;
 
   // ── Shared: SSE stream reader ──
+  // FIX #4: Error logging eklendi
   async function streamModel(modelId, promptText, apiKey, onToken) {
     const start = Date.now();
     try {
@@ -66,6 +82,11 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: promptText, model: modelId, apiKey, judgeKey: apiKeys?.judgeKey || "" }),
       });
+
+      if (!res.ok) {
+        console.error(`[streamModel] ${modelId} HTTP ${res.status}`);
+        return null;
+      }
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -86,25 +107,66 @@ export default function App() {
           try {
             const json = JSON.parse(data);
             if (json.token) onToken(json.token);
-          } catch {}
+          } catch (e) {
+            console.warn(`[streamModel] ${modelId} parse warning:`, e.message);
+          }
         }
       }
 
       return ((Date.now() - start) / 1000).toFixed(1);
-    } catch {
+    } catch (err) {
+      console.error(`[streamModel] ${modelId} failed:`, err);
       return null;
     }
   }
 
-  // ── CHAT MODE: Ask → 3 models parallel → auto synthesis ──
+  // ── Otonom mod sarmalayıcılar ──
+  // FIX #5: MODELS.provider ile lookup, hardcoded map kaldırıldı
+  async function autonomousStreamModel(provider, prompt, onChunk) {
+    const model = MODELS.find(m => m.provider === provider);
+    const modelId = model ? model.id : provider;
+    const apiKey = apiKeys?.[modelId] || "";
+    await streamModel(modelId, prompt, apiKey, onChunk);
+  }
+
+  async function autonomousJudgeModel(prompt) {
+    let fullText = "";
+    await streamModel("judge", prompt, apiKeys?.judgeKey || "", (token) => {
+      fullText += token;
+    });
+    if (!fullText || fullText.trim().length < 10) {
+      console.warn("Judge boş döndü, Groq fallback kullanılıyor");
+      fullText = "";
+      await streamModel("claude", prompt, apiKeys?.claude || "", (token) => {
+        fullText += token;
+      });
+    }
+    return fullText;
+}
+async function fetchUrl(targetUrl) {
+  try {
+    const res = await fetch(`${WORKER_URL}/fetch-url`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetUrl }),
+    });
+    const data = await res.json();
+    return data.ok ? data.content : null;
+  } catch (err) {
+    console.error('[fetchUrl] başarısız:', err);
+    return null;
+  }
+}
+  // ── CHAT MODE ──
+  // FIX #3: Message ID ile race condition önleme
+  // FIX #6: chatLoading synthesis boyunca true kalıyor
   async function handleChatAsk() {
     if (!prompt.trim() || !apiKeys || chatLoading) return;
 
     const userPrompt = prompt;
     setPrompt("");
 
-    // Add user message
-    setChatMessages((prev) => [...prev, { role: "user", content: userPrompt }]);
+    setChatMessages((prev) => [...prev, { id: genMsgId(), role: "user", content: userPrompt }]);
     setChatLoading(true);
     setThinkingPhase(0);
 
@@ -125,15 +187,13 @@ export default function App() {
 
     await Promise.all(promises);
     setThinkingPhase(1);
-
-    // Phase 2: Auto-synthesis
     setThinkingPhase(2);
 
-    // Pick judge model — use first model that has a response
     if (!apiKeys.judgeKey) {
       setChatMessages((prev) => [
         ...prev,
         {
+          id: genMsgId(),
           role: "maestro",
           content: "Cerebras API key girilmemiş. Lütfen API ayarlarından judge key'i girin.",
           modelResponses: {},
@@ -150,6 +210,7 @@ export default function App() {
       setChatMessages((prev) => [
         ...prev,
         {
+          id: genMsgId(),
           role: "maestro",
           content: "Modellerden cevap alınamadı. Lütfen API ayarlarını kontrol edin.",
           modelResponses: {},
@@ -161,14 +222,12 @@ export default function App() {
       return;
     }
 
-const modelNames = Object.fromEntries(activeModels.map(m => [m.id, m.name]));
+    const parts = activeModels
+      .filter(m => modelResponses[m.id])
+      .map((m, i) => `--- KAYNAK_${i + 1} ---\n${modelResponses[m.id]}`)
+      .join("\n\n");
 
-const parts = activeModels
-  .filter(m => modelResponses[m.id])
-  .map((m, i) => `--- KAYNAK_${i + 1} ---\n${modelResponses[m.id]}`)
-  .join("\n\n");
-
-const synthPrompt = `Sen bağımsız bir Sentez Editörüsün. Aşağıda aynı soruya 3 farklı kaynaktan gelen yanıtlar var.
+    const synthPrompt = `Sen bağımsız bir Sentez Editörüsün. Aşağıda aynı soruya 3 farklı kaynaktan gelen yanıtlar var.
 
 Kurallar:
 - Sana sunulan 3 adet bağımsız KAYNAK metnini sentezle
@@ -191,14 +250,14 @@ ${parts}
 Markdown formatı kullan.`;
 
     let synthText = "";
+    const maestroMsgId = genMsgId();
 
-    // Stream synthesis into chat as it arrives
-    const synthMsgIndex = chatMessages.length + 1; // +1 for user message already added
-
-    // Add placeholder maestro message
+    // FIX #3: Placeholder mesaj ID ile eklenir
+    // FIX #6: chatLoading HALA true — kullanıcı "bitmedi" anlıyor
     setChatMessages((prev) => [
       ...prev,
       {
+        id: maestroMsgId,
         role: "maestro",
         content: "",
         modelResponses,
@@ -206,29 +265,32 @@ Markdown formatı kullan.`;
         models: activeModels,
       },
     ]);
-    setChatLoading(false);
 
+    // FIX #3: Streaming sırasında ID ile güncelle (son eleman varsayma yok)
     await streamModel("judge", synthPrompt, apiKeys.judgeKey, (token) => {
       synthText += token;
-      setChatMessages((prev) => {
-        const updated = [...prev];
-        const lastMaestro = updated.length - 1;
-        updated[lastMaestro] = {
-          ...updated[lastMaestro],
-          content: synthText,
-        };
-        return updated;
-      });
+      setChatMessages((prev) =>
+        prev.map(msg =>
+          msg.id === maestroMsgId ? { ...msg, content: synthText } : msg
+        )
+      );
     });
 
-    // Track session
-    setSessionHistory((prev) => [
-      ...prev,
-      { timestamp: new Date().toISOString(), prompt: userPrompt },
-    ]);
-  }
+    // FIX #6: Synthesis bitti, ŞİMDİ loading kapat
+    setChatLoading(false);
 
-  // ── ORCHESTRATION MODE: Eski davranış ──
+    // Memory'e kaydet
+    saveChat({
+      prompt: userPrompt,
+      messages: [
+        ...chatMessages,
+        { id: genMsgId(), role: "user", content: userPrompt },
+        { id: maestroMsgId, role: "maestro", content: synthText },
+      ],
+      mode: 'chat',
+    });
+}
+  // ── ORCHESTRATION MODE ──
   async function askModel(modelId, promptText, apiKey) {
     const elapsed = await streamModel(modelId, promptText, apiKey, (token) => {
       setResponses((r) => ({ ...r, [modelId]: (r[modelId] || "") + token }));
@@ -287,6 +349,64 @@ Türkçe yaz. Markdown formatı kullan.`;
       setSynthesis((prev) => (prev || "") + token);
     });
   }
+// ── Share/Export ──
+  function handleExportMarkdown() {
+    if (chatMessages.length === 0) return;
+    
+    let md = `# Maestro Sohbet\n`;
+    md += `*${new Date().toLocaleString('tr-TR')}*\n\n---\n\n`;
+    
+    for (const msg of chatMessages) {
+      if (msg.role === 'user') {
+        md += `## 🧑 Kullanıcı\n\n${msg.content}\n\n`;
+      } else if (msg.role === 'maestro') {
+        md += `## ✦ Maestro\n\n${msg.content}\n\n`;
+        
+        // Model yanıtlarını da ekle
+        if (msg.modelResponses) {
+          md += `<details>\n<summary>Model Yanıtları</summary>\n\n`;
+          const models = msg.models || [];
+          for (const m of models) {
+            if (msg.modelResponses[m.id]) {
+              md += `### ${m.name}\n\n${msg.modelResponses[m.id]}\n\n`;
+            }
+          }
+          md += `</details>\n\n`;
+        }
+      }
+      md += `---\n\n`;
+    }
+    
+    const blob = new Blob([md], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `maestro-chat-${new Date().toISOString().slice(0, 10)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function handleShareLink() {
+    if (chatMessages.length === 0) return;
+    
+    // Sadece kullanıcı sorusu ve maestro sentezini al (hafif payload)
+    const shareData = chatMessages.map(msg => ({
+      r: msg.role === 'user' ? 'u' : 'm',
+      c: msg.content?.slice(0, 2000) || '',
+    }));
+    
+    const json = JSON.stringify(shareData);
+    const encoded = btoa(unescape(encodeURIComponent(json)));
+    
+    // URL hash olarak ekle
+    const shareUrl = `${window.location.origin}${window.location.pathname}#share=${encoded}`;
+    
+    // Clipboard'a kopyala
+    navigator.clipboard.writeText(shareUrl).catch(() => {
+      // Fallback: prompt ile göster
+      prompt('Paylaşım linki:', shareUrl);
+    });
+  }
 
   function handleNewChat() {
     setPrompt("");
@@ -332,11 +452,10 @@ Türkçe yaz. Markdown formatı kullan.`;
     URL.revokeObjectURL(url);
   }
 
-  // ── Decide which ask handler to call ──
   function handleAsk() {
     if (mode === "chat") {
       handleChatAsk();
-    } else {
+    } else if (mode === "orchestration") {
       handleOrchAsk();
     }
   }
@@ -378,7 +497,19 @@ Türkçe yaz. Markdown formatı kullan.`;
         onExportSession={exportACTP}
         onOpenSettings={() => setShowModal(true)}
         mode={mode}
-        setMode={setMode}
+        setMode={(m) => { setMode(m); if (m !== 'autonomous') setPref('defaultMode', m); }}
+        chatHistory={chats}
+        onLoadChat={(chatId) => {
+          const chat = loadChat(chatId);
+          if (chat) {
+            setChatMessages(chat.messages);
+            setMode('chat');
+          }
+        }}
+        onDeleteChat={deleteChat}
+        onClearHistory={clearAllChats}
+        onExportMarkdown={handleExportMarkdown}
+        onShareLink={handleShareLink}
       />
 
       {/* ── SYNTHESIS MODAL (Orkestrasyon modu) ── */}
@@ -476,73 +607,86 @@ Türkçe yaz. Markdown formatı kullan.`;
         />
       )}
 
-      {/* ── PROMPT AREA (her iki modda da gösterilir) ── */}
-      <div className={`center-fixed ${mode === "chat" ? "chat-prompt-mode" : ""}`}>
-        {mode === "orchestration" && asked && (
-          <div className={`consensus-badge ${consensus}`}>
-            {consensus === "high" ? "🟢 Yüksek Consensus" : "🔴 Görüşler Ayrışıyor"}
-          </div>
-        )}
+      {/* ── AUTONOMOUS MODE ── */}
+      {mode === "autonomous" && apiKeys && (
+        <OrchestratorProvider
+  streamModel={autonomousStreamModel}
+  judgeModel={autonomousJudgeModel}
+  fetchUrl={fetchUrl}
+>
+          <AutonomousMode />
+        </OrchestratorProvider>
+      )}
 
-        <div className="prompt-row">
-          <div className="prompt-area">
-            <textarea
-              className="prompt-input"
-              placeholder="Maestro'ya sor..."
-              value={prompt}
-              onChange={(e) => {
-                setPrompt(e.target.value);
-                e.target.style.height = "auto";
-                e.target.style.height = Math.min(e.target.scrollHeight, 200) + "px";
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleAsk();
-                }
-              }}
-              rows={1}
-            />
-            <button
-              className="ask-btn"
-              onClick={handleAsk}
-              disabled={loading || chatLoading}
-            >
-              {loading || chatLoading ? "..." : "SOR"}
-            </button>
+      {/* ── PROMPT AREA ── */}
+      {mode !== "autonomous" && (
+        <div className={`center-fixed ${mode === "chat" ? "chat-prompt-mode" : ""}`}>
+          {mode === "orchestration" && asked && (
+            <div className={`consensus-badge ${consensus}`}>
+              {consensus === "high" ? "🟢 Yüksek Consensus" : "🔴 Görüşler Ayrışıyor"}
+            </div>
+          )}
+
+          <div className="prompt-row">
+            <div className="prompt-area">
+              <textarea
+                className="prompt-input"
+                placeholder="Maestro'ya sor..."
+                value={prompt}
+                onChange={(e) => {
+                  setPrompt(e.target.value);
+                  e.target.style.height = "auto";
+                  e.target.style.height = Math.min(e.target.scrollHeight, 200) + "px";
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleAsk();
+                  }
+                }}
+                rows={1}
+              />
+              <button
+                className="ask-btn"
+                onClick={handleAsk}
+                disabled={loading || chatLoading}
+              >
+                {loading || chatLoading ? "..." : "SOR"}
+              </button>
+            </div>
+
+            {mode === "orchestration" && (
+              <div className={`char-wrap ${loading ? "conducting" : ""}`}>
+                <img src={maestroChar} alt="Maestro" className="char-img" />
+                <div className="char-glow" />
+              </div>
+            )}
           </div>
 
-          {mode === "orchestration" && (
-            <div className={`char-wrap ${loading ? "conducting" : ""}`}>
-              <img src={maestroChar} alt="Maestro" className="char-img" />
-              <div className="char-glow" />
+          {mode === "orchestration" &&
+            Object.keys(responses).length === MODELS.filter((m) => apiKeys?.[m.id]).length &&
+            asked && (
+              <button className="synthesis-trigger" onClick={() => setShowSynthesis(true)}>
+                ∑ Synthesis
+              </button>
+            )}
+
+          {mode === "orchestration" && showSynthesis && !synthesis && (
+            <div className="synthesis-btns" style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+              {MODELS.filter((m) => apiKeys?.[m.id]).map((m) => (
+                <button
+                  key={m.id}
+                  className={`synth-btn ${synthModel === m.id ? "active" : ""}`}
+                  style={{ "--c": m.color }}
+                  onClick={() => handleSynthesize(m.id)}
+                >
+                  {m.name}
+                </button>
+              ))}
             </div>
           )}
         </div>
-
-        {mode === "orchestration" &&
-          Object.keys(responses).length === MODELS.filter((m) => apiKeys?.[m.id]).length &&
-          asked && (
-            <button className="synthesis-trigger" onClick={() => setShowSynthesis(true)}>
-              ∑ Synthesis
-            </button>
-          )}
-
-        {mode === "orchestration" && showSynthesis && !synthesis && (
-          <div className="synthesis-btns" style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
-            {MODELS.filter((m) => apiKeys?.[m.id]).map((m) => (
-              <button
-                key={m.id}
-                className={`synth-btn ${synthModel === m.id ? "active" : ""}`}
-                style={{ "--c": m.color }}
-                onClick={() => handleSynthesize(m.id)}
-              >
-                {m.name}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      )}
 
       <div ref={chatEndRef} />
     </div>

@@ -119,7 +119,7 @@ body {
 .bg-noise {
   position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
-  opacity: 0.3;
+  opacity: 0.0;
 }
 
 .bg-glow {
@@ -696,6 +696,10 @@ body {
   left: 0;
 }
 
+.sidebar.open {
+  left: 0;
+}
+
 .sidebar-header {
   padding: 0 16px 16px;
   border-bottom: 1px solid #d4cbb8;
@@ -1138,4 +1142,449 @@ body {
 
 .mode-chat .center-fixed {
   background: linear-gradient(to top, var(--bg) 75%, transparent 100%);
+}
+
+/* ── Sidebar Ek Stiller ── */
+/* App.css'in EN SONUNA EKLE. Mevcut kuralları DEĞİŞTİRME. */
+
+/* Overlay */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1499;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s;
+}
+
+.sidebar-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* SVG Logo */
+.sidebar-logo {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+/* Header yatay hizalama */
+.sidebar .sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Mod butonları — dikey, eşit boyda */
+.sidebar-mode-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+}
+
+.mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  background: none;
+  border: none;
+  border-left: 3px solid transparent;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.85rem;
+  color: #6b6358;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.mode-btn:hover {
+  background: rgba(154, 122, 74, 0.08);
+  color: #1a1a1a;
+}
+
+.mode-btn.active {
+  border-left-color: #9a7a4a;
+  background: rgba(154, 122, 74, 0.12);
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+/* Footer */
+.sidebar-footer {
+  margin-top: auto;
+  padding: 12px 16px;
+  border-top: 1px solid #d4cbb8;
+}
+
+.sidebar-models {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.model-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-llama { background: #7F77DD; box-shadow: 0 0 4px rgba(127,119,221,0.3); }
+.dot-gpt   { background: #1D9E75; box-shadow: 0 0 4px rgba(29,158,117,0.3); }
+.dot-qwen  { background: #378ADD; box-shadow: 0 0 4px rgba(55,138,221,0.3); }
+
+.model-label {
+  font-size: 0.58rem;
+  color: #9a8e7a;
+  margin-right: 6px;
+  letter-spacing: 0.02em;
+}
+
+.sidebar-version {
+  font-size: 0.58rem;
+  color: #b5a890;
+  letter-spacing: 0.04em;
+}
+/* ── Sidebar Geçmiş Sohbetler ── */
+
+.sidebar-history {
+  padding: 4px 8px;
+  border-top: 1px solid #d4cbb8;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.sidebar-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px;
+}
+
+.sidebar-history-toggle {
+  background: none;
+  border: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: #9a8e7a;
+  cursor: pointer;
+  padding: 0;
+  text-transform: uppercase;
+}
+
+.sidebar-history-toggle:hover {
+  color: #1a1a1a;
+}
+
+.sidebar-history-clear {
+  background: none;
+  border: none;
+  font-size: 0.62rem;
+  color: #c85050;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+.sidebar-history-clear:hover {
+  opacity: 1;
+}
+
+.sidebar-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sidebar-history-item {
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.sidebar-history-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-history-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 7px 8px;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sidebar-history-title {
+  font-size: 0.78rem;
+  color: #1a1a1a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-history-date {
+  font-size: 0.6rem;
+  color: #9a8e7a;
+}
+
+.sidebar-history-delete {
+  background: none;
+  border: none;
+  color: #c85050;
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.sidebar-history-item:hover .sidebar-history-delete {
+  opacity: 0.5;
+}
+
+.sidebar-history-delete:hover {
+  opacity: 1 !important;
+  background: rgba(200, 80, 80, 0.08);
+}/* ── Confidence Alert (Çelişki Uyarısı) ── */
+
+.confidence-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: rgba(217, 119, 6, 0.06);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+  border-left: 3px solid #d97706;
+  border-radius: 0 8px 8px 0;
+  animation: fadeIn 0.3s ease;
+}
+
+.confidence-alert-icon {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.confidence-alert-text {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  color: #92400e;
+  line-height: 1.5;
+}
+/* ── Sidebar Gelişmiş Modlar ── */
+ 
+.sidebar-advanced {
+  padding: 0 8px;
+}
+ 
+.sidebar-advanced-toggle {
+  background: none;
+  border: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: #9a8e7a;
+  cursor: pointer;
+  padding: 6px 4px;
+  text-transform: uppercase;
+  width: 100%;
+  text-align: left;
+}
+ 
+.sidebar-advanced-toggle:hover {
+  color: #1a1a1a;
+}
+ 
+.sidebar-advanced-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 4px;
+}
+ 
+/* Mod etiketleri (Debug, Beta) */
+.mode-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 0.08em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-left: auto;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+ 
+.mode-tag.debug {
+  color: #6b7280;
+  background: rgba(107, 114, 128, 0.1);
+  border: 1px solid rgba(107, 114, 128, 0.2);
+}
+ 
+.mode-tag.beta {
+  color: #d97706;
+  background: rgba(217, 119, 6, 0.08);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+}
+ 
+/* ══════════════════════════════════════════════════════
+   SIDEBAR NAV — Gemini tarzı minimal, hizalı sidebar
+   
+   Bu CSS'i App.css'in sonuna EKLE.
+   
+   Eski şu blokları App.css'ten SİL:
+   - .sidebar-mode-toggle { ... }
+   - .mode-btn { ... }
+   - .mode-btn:hover { ... }
+   - .mode-btn.active { ... }
+   - .sidebar-advanced { ... }
+   - .sidebar-advanced-toggle { ... }
+   - .sidebar-advanced-toggle:hover { ... }
+   - .sidebar-advanced-modes { ... }
+   - .mode-tag { ... }
+   - .mode-tag.debug { ... }
+   - .mode-tag.beta { ... }
+   ══════════════════════════════════════════════════════ */
+
+/* Nav grubu */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 8px;
+  gap: 1px;
+}
+
+/* Nav öğesi — tüm ikonlar aynı hizada */
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 0.88rem;
+  color: #4a4540;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-nav-item:hover {
+  background: rgba(154, 122, 74, 0.06);
+  color: #9a7a4a;
+}
+
+/* Aktif — arka plan yok, sadece font-weight + sol çizgi */
+.sidebar-nav-item.active {
+  font-weight: 600;
+  color: #1a1a1a;
+  background: rgba(154, 122, 74, 0.08);
+  border-left: 3px solid #9a7a4a;
+  padding-left: 9px;
+  border-radius: 0 8px 8px 0;
+}
+
+/* İkon wrapper — sabit boyut, hizalama */
+.sidebar-nav-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+/* Etiket metni */
+.sidebar-nav-label {
+  flex: 1;
+}
+
+/* Bölüm başlığı (Gelişmiş toggle) */
+.sidebar-nav-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 12px;
+  background: transparent;
+  border: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9a8e7a;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.15s;
+}
+
+.sidebar-nav-section:hover {
+  color: #1a1a1a;
+}
+
+/* Badge — sağa hizalı, küçük */
+.sidebar-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: auto;
+  text-transform: uppercase;
+  font-weight: 600;
+  border: 1px solid currentColor;
+  opacity: 0.5;
+}
+
+.sidebar-badge.muted {
+  color: #6b7280;
+}
+
+.sidebar-badge.warn {
+  color: #d97706;
+}
+
+/* Ayırıcı çizgi */
+.sidebar-divider {
+  height: 1px;
+  margin: 4px 16px;
+  background: linear-gradient(90deg, transparent, #d4cbb8, transparent);
+}
+/* ── Hayalet çizgi temizliği ── */
+.chat-view,
+.chat-column,
+.chat-root,
+.chat-messages,
+.maestro-root {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.center-fixed {
+  border: none !important;
+  box-shadow: none !important;
 }

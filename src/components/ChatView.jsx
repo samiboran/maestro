@@ -3,6 +3,20 @@ import ReactMarkdown from "react-markdown";
 
 const LONG_MSG_THRESHOLD = 280;
 
+// Çelişki tespiti — sentez metninde bu kelimeler varsa uyarı göster
+const CONFLICT_KEYWORDS = [
+  "çelişki", "çelişiyor", "farklı görüş", "farklı yaklaşım",
+  "uyuşmuyor", "tutarsız", "ayrışıyor", "karşıt",
+  "öte yandan", "aksine", "ancak dikkat", "hatalı",
+  "yanlış", "eksik bırak", "conflict", "disagree",
+];
+
+function detectConflict(text) {
+  if (!text) return false;
+  const lower = text.toLowerCase();
+  return CONFLICT_KEYWORDS.some(kw => lower.includes(kw));
+}
+
 export default function ChatView({ messages, loading, thinkingPhase, onRetry }) {
   return (
     <div className="chat-root">
@@ -17,7 +31,7 @@ export default function ChatView({ messages, loading, thinkingPhase, onRetry }) 
               </div>
             )}
             {messages.map((msg, i) => (
-              <ChatBubble key={i} message={msg} onRetry={onRetry} index={i} />
+              <ChatBubble key={msg.id || i} message={msg} onRetry={onRetry} index={i} />
             ))}
             {loading && (
               <div className="chat-bubble maestro">
@@ -69,6 +83,8 @@ function ChatBubble({ message, onRetry, index }) {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  const hasConflict = message.role === "maestro" && message.content && detectConflict(message.content);
+
   return (
     <div className="chat-bubble maestro">
       <div className="chat-bubble-header">
@@ -80,22 +96,33 @@ function ChatBubble({ message, onRetry, index }) {
           </span>
         )}
       </div>
+
+      {/* Çelişki uyarısı — sadece çelişki varsa gösterilir */}
+      {hasConflict && (
+        <div className="confidence-alert">
+          <span className="confidence-alert-icon">⚠</span>
+          <span className="confidence-alert-text">
+            Modeller arasında farklı görüşler tespit edildi — detaylar sentezde belirtilmiştir.
+          </span>
+        </div>
+      )}
+
       <div className="chat-bubble-content">
         <ReactMarkdown>{message.content}</ReactMarkdown>
       </div>
       {message.content && (
-  <div className="copy-bar">
-    <button className={`copy-btn ${copied ? 'copied' : ''}`} onClick={handleCopy}>
-      <span className="copy-icon">{copied ? '✓' : '⧉'}</span>
-      <span className="copy-text">{copied ? 'Kopyalandı' : 'Kopyala'}</span>
-    </button>
-    {onRetry && (
-      <button className="retry-btn" onClick={() => onRetry(index)}>
-        ↻ Tekrar
-      </button>
-    )}
-  </div>
-)}
+        <div className="copy-bar">
+          <button className={`copy-btn ${copied ? 'copied' : ''}`} onClick={handleCopy}>
+            <span className="copy-icon">{copied ? '✓' : '⧉'}</span>
+            <span className="copy-text">{copied ? 'Kopyalandı' : 'Kopyala'}</span>
+          </button>
+          {onRetry && (
+            <button className="retry-btn" onClick={() => onRetry(index)}>
+              ↻ Tekrar
+            </button>
+          )}
+        </div>
+      )}
       {message.modelResponses && Object.keys(message.modelResponses).length > 0 && (
         <div className="model-toggle-area">
           <button className="model-toggle-btn" onClick={() => setShowModels(!showModels)}>

@@ -1,0 +1,508 @@
+/* ══════════════════════════════════════════
+   OTONOM MOD STİLLERİ
+   Açık krem tema ile uyumlu.
+   App.jsx'te import et: import "./styles/autonomous.css"
+   ══════════════════════════════════════════ */
+
+/* ── Container ── */
+.auto-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 140px; /* alt padding: prompt alanı + scroll space */
+  font-family: 'Crimson Pro', Georgia, serif;
+}
+
+/* ── Başlık ── */
+.auto-header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.auto-title {
+  justify-content: center;
+}
+
+.auto-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text, #1a1a1a);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.04em;
+}
+
+.auto-title-icon {
+  font-size: 1.1rem;
+}
+
+.auto-subtitle {
+  color: var(--muted, #6b7280);
+  font-size: 0.82rem;
+  margin-top: 4px;
+  display: block;
+}
+
+/* ── Input ── */
+.auto-input-area {
+  margin-bottom: 16px;
+}
+
+.auto-input-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  gap: 8px;
+}
+
+.auto-run-btn {
+  background: var(--gold, #9a7a4a);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.06em;
+  transition: background 0.15s;
+}
+
+.auto-run-btn:hover {
+  background: #8a6a3a;
+}
+
+.auto-abort-btn {
+  background: #c85050;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.06em;
+}
+
+/* ── Hata ── */
+.auto-error {
+  background: rgba(200, 80, 80, 0.08);
+  border: 1px solid rgba(200, 80, 80, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #c85050;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+/* ── Bölümler ── */
+.auto-section {
+  margin-top: 20px;
+}
+
+.auto-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted, #6b7280);
+  margin-bottom: 10px;
+}
+
+/* ── Son Teslimat ── */
+.auto-final-output {
+  background: var(--surface, #ffffff);
+  border: 1px solid rgba(154, 122, 74, 0.3);
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.auto-output-content {
+  padding: 20px 22px;
+  max-height: 600px;
+  overflow-y: auto;
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--text, #1a1a1a);
+}
+
+.auto-output-content h1,
+.auto-output-content h2,
+.auto-output-content h3 {
+  font-family: 'Cinzel', serif;
+  color: var(--text, #1a1a1a);
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.auto-output-content pre {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border, rgba(0,0,0,0.08));
+  border-radius: 8px;
+  padding: 12px;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.auto-output-content code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.82rem;
+}
+
+.auto-output-content ul,
+.auto-output-content ol {
+  padding-left: 1.2rem;
+  margin: 0.5rem 0;
+}
+
+.auto-copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border, rgba(0,0,0,0.08));
+  border-radius: 8px;
+  color: var(--muted, #6b7280);
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.04em;
+  transition: all 0.2s;
+}
+
+.auto-copy-btn:hover {
+  background: rgba(154, 122, 74, 0.1);
+  color: var(--gold, #9a7a4a);
+}
+
+/* ── Aktivite Logu ── */
+.auto-log-toggle {
+  background: none;
+  border: none;
+  color: var(--muted, #6b7280);
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: 'Crimson Pro', serif;
+}
+
+.auto-log-toggle:hover {
+  color: var(--gold, #9a7a4a);
+}
+
+.auto-log-box {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--border, rgba(0,0,0,0.08));
+  border-radius: 10px;
+  padding: 10px 14px;
+  max-height: 200px;
+  overflow: auto;
+  margin-top: 6px;
+}
+
+.auto-log-line {
+  color: var(--muted, #6b7280);
+  font-size: 0.68rem;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  line-height: 1.8;
+}
+
+/* ── Timeline ── */
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+  gap: 8px;
+}
+
+.timeline-row {
+  display: flex;
+  align-items: center;
+}
+
+.timeline-phase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  gap: 8px;
+}
+
+.timeline-connector {
+  position: absolute;
+  top: 18px;
+  right: 50%;
+  width: 60px;
+  height: 2px;
+  transform: translateX(-14px);
+  background: var(--border, rgba(0,0,0,0.08));
+  transition: background 0.3s;
+}
+
+.timeline-connector.done,
+.timeline-connector.active {
+  background: var(--gold, #9a7a4a);
+}
+
+.timeline-node {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border, rgba(0,0,0,0.08));
+  background: var(--surface, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  margin: 0 40px;
+  transition: all 0.3s;
+}
+
+.timeline-node.done {
+  border-color: var(--gold, #9a7a4a);
+  background: rgba(154, 122, 74, 0.1);
+}
+
+.timeline-node.active {
+  border-color: var(--gold, #9a7a4a);
+  box-shadow: 0 0 12px rgba(154, 122, 74, 0.25);
+  animation: timelinePulse 2s ease-in-out infinite;
+}
+
+.timeline-icon {
+  font-size: 14px;
+}
+
+.timeline-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  margin: 0 40px;
+  font-family: 'Cinzel', serif;
+  color: var(--muted, #6b7280);
+}
+
+.timeline-label.done,
+.timeline-label.active {
+  color: var(--text, #1a1a1a);
+  font-weight: 600;
+}
+
+.timeline-iter-badge {
+  font-size: 0.65rem;
+  color: var(--muted, #6b7280);
+  background: rgba(0, 0, 0, 0.03);
+  padding: 2px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border, rgba(0,0,0,0.08));
+}
+
+/* ── Task Card ── */
+.task-card {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, rgba(0,0,0,0.08));
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  transition: box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.task-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.task-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-card-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.task-status-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.task-status-icon.pulse {
+  animation: taskPulse 1.5s ease-in-out infinite;
+}
+
+.task-title {
+  color: var(--text, #1a1a1a);
+  font-size: 0.9rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-model-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+
+.task-status-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding-left: 22px;
+}
+
+.task-feedback-tag {
+  font-size: 0.65rem;
+  color: #d97706;
+  background: rgba(217, 119, 6, 0.08);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.task-expand-btn {
+  background: none;
+  border: none;
+  color: var(--muted, #6b7280);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 6px 0 2px 22px;
+  font-family: 'Crimson Pro', serif;
+  transition: color 0.15s;
+}
+
+.task-expand-btn:hover {
+  color: var(--gold, #9a7a4a);
+}
+
+.task-result-box {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border, rgba(0,0,0,0.08));
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 6px;
+  margin-left: 22px;
+  font-size: 0.82rem;
+  color: var(--text, #1a1a1a);
+  overflow: auto;
+  max-height: 400px;
+  line-height: 1.6;
+}
+
+.task-result-box pre {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+  padding: 10px;
+  overflow-x: auto;
+  font-size: 0.78rem;
+}
+
+.task-truncated {
+  color: var(--muted, #6b7280);
+  font-style: italic;
+  margin-top: 8px;
+}
+
+/* ── Animasyonlar ── */
+@keyframes taskPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes timelinePulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(154, 122, 74, 0.15); }
+  50% { box-shadow: 0 0 16px rgba(154, 122, 74, 0.35); }
+}
+
+.auto-output-content,
+.auto-output-content * {
+  text-align: left !important;
+}/* autonomous.css'in SONUNA ekle */
+
+/* ── Sabit Alt Prompt Bar ── */
+.auto-prompt-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 720px;
+  max-width: 90vw;
+  padding: 1rem 0 1.5rem;
+  z-index: 50;
+  background: linear-gradient(to top, var(--bg, #faf9f7) 70%, transparent 100%);
+}
+
+.auto-prompt-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.auto-prompt-row .prompt-input {
+  flex: 1;
+  padding-right: 1.5rem;
+}
+
+.auto-prompt-btn {
+  flex-shrink: 0;
+  height: 42px;
+  min-width: 80px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+}
+
+/* Container alt padding — prompt bar alanı için */
+.auto-container {
+  padding-bottom: 200px;
+}
+
+.auto-output-content,
+.auto-output-content * {
+  text-align: left !important;
+}.auto-header,
+.auto-header * {
+  text-align: center !important;
+}
+/* ── Kompakt Görev Kartları — tek satır ── */
+.auto-section .task-card {
+  padding: 8px 14px;
+  margin-bottom: 4px;
+}
+
+.auto-section .task-card .task-card-header {
+  gap: 6px;
+}
+
+.auto-section .task-card .task-title {
+  font-size: 0.82rem;
+}
+
+.auto-section .task-card .task-status-line {
+  margin-top: 2px;
+  padding-left: 22px;
+}
+
+.auto-section .task-card .task-status-line span {
+  font-size: 0.7rem;
+}

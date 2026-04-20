@@ -10,7 +10,7 @@ export default function DraggablePanel({
   initialY = 80,
   initialWidth = 380,
   initialHeight = 350,
-  zIndex = 10
+  zIndex = 1000
 }) {
   const [position, setPosition] = useState({ x: initialX, y: initialY });
   const [size, setSize] = useState({ width: initialWidth, height: initialHeight });

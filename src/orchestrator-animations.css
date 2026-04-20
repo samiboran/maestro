@@ -1,0 +1,20 @@
+/**
+ * orchestrator-animations.css
+ * 
+ * Global CSS'ine ekle veya App.jsx'te import et:
+ *   import './orchestrator-animations.css';
+ * 
+ * Bu keyframe'ler TaskCard ve ProgressTimeline tarafından kullanılır.
+ */
+
+/* Görev kartı çalışma göstergesi titreşimi */
+@keyframes taskPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Zaman çizelgesi aktif düğüm parlaması */
+@keyframes timelinePulse {
+  0%, 100% { box-shadow: 0 0 8px #58a6ff30; }
+  50% { box-shadow: 0 0 16px #58a6ff60; }
+}
