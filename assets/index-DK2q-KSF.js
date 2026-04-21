@@ -71,6 +71,11 @@ Kurallar:
 - Kritik hatalar varsa öne çıkar
 - Teknik sorularda en doğru kodu öne çıkar
 - Giriş cümlesi yazma, direkt cevaba gir
+- Her paragraf arasında boş satır bırak
+- Başlıklar için ## kullan
+- Önemli kavramları **bold** yap
+- Madde listesi gerekiyorsa * ile başlat
+- Bölümler arasında --- kullan
 - Cevabı Türkçe ver
 
 Örnek doğru kullanım: "İncelenen 3 yanıta göre..." ✅
