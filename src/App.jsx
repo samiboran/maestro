@@ -571,6 +571,13 @@ Türkçe yaz. Markdown formatı kullan.`;
       )}
 
       {/* ── ORCHESTRATION MODE ── */}
+
+      
+  {mode === "orchestration" && (
+  <div className="auto-header" style={{ marginTop: "60px" }}>
+    
+  </div>
+)}
       {mode === "orchestration" && (
         <>
           {asked && (

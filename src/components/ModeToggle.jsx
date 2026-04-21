@@ -19,7 +19,8 @@ export default function ModeToggle({ mode, setMode }) {
             color: mode === m.id ? "#fff" : "#9a7a4a",
             fontSize: "11px",
             cursor: "pointer",
-            fontFamily: "DM Sans, sans-serif",
+            fontFamily: "Cinzel, serif",
+            letterSpacing: "0.05em",
           }}
         >
           {m.label}

@@ -1588,3 +1588,77 @@ body {
   border: none !important;
   box-shadow: none !important;
 }
+/* ── Welcome başlığı font tutarlılığı ── */
+.chat-welcome-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  margin: 0;
+}
+/* ── Tüm mod başlıkları — pixel-perfect hizalama ── */
+.chat-welcome-title,
+.auto-title {
+  font-family: 'Cinzel', serif !important;
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  line-height: 1.4 !important;
+  color: var(--text) !important;
+  margin: 0 !important;
+}
+/* ── Mod başlıkları — eşit üst boşluk ── */
+.chat-welcome {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+.chat-messages {
+  padding-top: 24px !important;
+}
+.chat-welcome-title,
+.auto-title {
+  font-family: 'Cinzel', serif !important;
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  line-height: 1.4 !important;
+  color: var(--text) !important;
+  margin: 0 !important;
+}
+.chat-welcome-title {
+  font-family: 'Cinzel', serif !important;
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  color: var(--text, #1a1a1a) !important;
+  margin: 0 !important;
+}
+/* ── Chat welcome — Otonom ile aynı layout ── */
+.chat-welcome {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.chat-welcome-icon {
+  font-size: 1.1rem;
+  display: inline;
+  margin-right: 6px;
+}
+
+.chat-welcome-title {
+  display: inline;
+}
+
+.chat-welcome-sub {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+  margin-top: 4px;
+  display: block;
+}

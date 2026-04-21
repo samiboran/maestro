@@ -25,12 +25,12 @@ export default function ChatView({ messages, loading, thinkingPhase, onRetry }) 
           <div className="chat-messages">
             {messages.length === 0 && !loading && (
               <div className="chat-welcome">
-               <div className="chat-welcome">
-  <span className="chat-welcome-icon">⚡</span>
-  <h2 className="chat-welcome-title">Maestro</h2>
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+    <span className="chat-welcome-icon">⚡</span>
+    <h2 className="chat-welcome-title">Maestro</h2>
+  </div>
+  <p className="chat-welcome-sub">3 model soruyor, en iyi cevabı sentezliyor.</p>
 </div>
-<p className="chat-welcome-sub">3 model soruyor, en iyi cevabı sentezliyor.</p>
-              </div>
             )}
             {messages.map((msg, i) => (
               <ChatBubble key={msg.id || i} message={msg} onRetry={onRetry} index={i} />
@@ -49,7 +49,6 @@ export default function ChatView({ messages, loading, thinkingPhase, onRetry }) 
     </div>
   );
 }
-
 function ChatBubble({ message, onRetry, index }) {
   const [showModels, setShowModels] = useState(false);
   const [copied, setCopied] = useState(false);
