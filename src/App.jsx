@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import maestroChar from "./assets/miya.jpg";
 import ApiKeyModal from "./ApiKeyModal";
 import Sidebar from "./components/Sidebar";
 import DraggablePanel from "./components/DraggablePanel";
@@ -10,6 +9,8 @@ import "./styles/Prompt.css";
 import "./styles/autonomous.css";
 import "./orchestrator-animations.css";
 import ReactMarkdown from "react-markdown";
+import { useOrchestrator } from "./orchestrator/OrchestratorContext.jsx";
+import ModeToggle from "./components/ModeToggle";
 
 // ── Otonom mod importları ──
 import AutonomousMode from "./modes/AutonomousMode.jsx";
@@ -33,10 +34,10 @@ export default function App() {
   const [apiKeys, setApiKeys] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  const { run } = useOrchestrator();  
   // Mode: "chat" | "orchestration" | "autonomous"
   const { chats, saveChat, loadChat, deleteChat, clearAllChats, setPref, getPref } = useMemory();
-const [mode, setMode] = useState(() => getPref('defaultMode', 'chat'));
+  const [mode, setMode] = useState(() => getPref('defaultMode', 'chat'));
 
   // ── Chat mode state ──
   const [chatMessages, setChatMessages] = useState([]);
@@ -452,13 +453,40 @@ Türkçe yaz. Markdown formatı kullan.`;
     URL.revokeObjectURL(url);
   }
 
-  function handleAsk() {
-    if (mode === "chat") {
-      handleChatAsk();
-    } else if (mode === "orchestration") {
-      handleOrchAsk();
+ async function handleAsk() {
+  if (mode === "chat") {
+    handleChatAsk();
+  } else if (mode === "orchestration") {
+    handleOrchAsk();
+  } else if (mode === "autonomous") {
+    if (!prompt.trim()) return;
+    const userPrompt = prompt;
+    setPrompt("");
+    setChatMessages(prev => [...prev, { id: genMsgId(), role: "user", content: userPrompt }]);
+    setChatLoading(true);
+    try {
+      const result = await run(userPrompt);
+      setChatMessages(prev => [...prev, {
+        id: genMsgId(),
+        role: "maestro",
+        content: result || "Görev tamamlandı.",
+        modelResponses: {},
+        timings: {},
+        models: [],
+      }]);
+    } catch (err) {
+      setChatMessages(prev => [...prev, {
+        id: genMsgId(),
+        role: "maestro",
+        content: "Autonomous hata verdi: " + err.message,
+        modelResponses: {},
+        timings: {},
+        models: [],
+      }]);
     }
+    setChatLoading(false);
   }
+}
 
   function renderModelContent(modelId) {
     if (loading && !responses[modelId]) {
@@ -608,18 +636,12 @@ Türkçe yaz. Markdown formatı kullan.`;
       )}
 
       {/* ── AUTONOMOUS MODE ── */}
-      {mode === "autonomous" && apiKeys && (
-        <OrchestratorProvider
-  streamModel={autonomousStreamModel}
-  judgeModel={autonomousJudgeModel}
-  fetchUrl={fetchUrl}
->
-          <AutonomousMode />
-        </OrchestratorProvider>
-      )}
+{mode === "autonomous" && apiKeys && (
+  <AutonomousMode hidePrompt={true} />
+)}
 
       {/* ── PROMPT AREA ── */}
-      {mode !== "autonomous" && (
+      
         <div className={`center-fixed ${mode === "chat" ? "chat-prompt-mode" : ""}`}>
           {mode === "orchestration" && asked && (
             <div className={`consensus-badge ${consensus}`}>
@@ -627,7 +649,9 @@ Türkçe yaz. Markdown formatı kullan.`;
             </div>
           )}
 
-          <div className="prompt-row">
+          <div className="prompt-row" style={{ flexDirection: "column", alignItems: "center", gap: "8px" }}>
+
+  <ModeToggle mode={mode} setMode={(m) => { setMode(m); if (m !== 'autonomous') setPref('defaultMode', m); }} />
             <div className="prompt-area">
               <textarea
                 className="prompt-input"
@@ -655,14 +679,6 @@ Türkçe yaz. Markdown formatı kullan.`;
               </button>
             </div>
 
-            {mode === "orchestration" && (
-              <div className={`char-wrap ${loading ? "conducting" : ""}`}>
-                <img src={maestroChar} alt="Maestro" className="char-img" />
-                <div className="char-glow" />
-              </div>
-            )}
-          </div>
-
           {mode === "orchestration" &&
             Object.keys(responses).length === MODELS.filter((m) => apiKeys?.[m.id]).length &&
             asked && (
@@ -671,7 +687,7 @@ Türkçe yaz. Markdown formatı kullan.`;
               </button>
             )}
 
-          {mode === "orchestration" && showSynthesis && !synthesis && (
+{mode === "orchestration" && showSynthesis && !synthesis && (
             <div className="synthesis-btns" style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
               {MODELS.filter((m) => apiKeys?.[m.id]).map((m) => (
                 <button
@@ -686,8 +702,7 @@ Türkçe yaz. Markdown formatı kullan.`;
             </div>
           )}
         </div>
-      )}
-
+        </div>
       <div ref={chatEndRef} />
     </div>
   );

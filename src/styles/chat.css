@@ -53,11 +53,18 @@
 
 .chat-welcome-title {
   font-family: 'Cinzel', serif;
-  font-size: 2rem;
-  font-weight: 400;
-  letter-spacing: 0.15em;
-  color: var(--text);
-  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.chat-welcome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
 }
 
 .chat-welcome-sub {

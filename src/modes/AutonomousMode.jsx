@@ -3,8 +3,8 @@ import { useOrchestrator, STATES } from '../orchestrator/OrchestratorContext.jsx
 import ProgressTimeline from '../components/ProgressTimeline.jsx';
 import TaskCard from '../components/TaskCard.jsx';
 import ReactMarkdown from 'react-markdown';
-
-export default function AutonomousMode() {
+export default function AutonomousMode({ hidePrompt = false }) {
+  
   const {
     engineState, tasks, iteration, logs, finalOutput, synthesisStream, error,
     run, abort, isRunning,
@@ -161,36 +161,38 @@ export default function AutonomousMode() {
         </div>
       )}
 
-      {/* ── PROMPT BAR — altta sabit ── */}
-      <div className="auto-prompt-fixed">
-        <div className="auto-prompt-row">
-          <textarea
-            className="prompt-input"
-            value={prompt}
-            onChange={e => {
-              setPrompt(e.target.value);
-              e.target.style.height = 'auto';
-              e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
-            }}
-            onKeyDown={handleKeyDown}
-            placeholder="Maestro'ya görev ver..."
-            disabled={isRunning}
-            rows={1}
-          />
-          {isRunning ? (
-            <button onClick={abort} className="auto-abort-btn auto-prompt-btn">■</button>
-          ) : (
-            <button
-              onClick={handleSubmit}
-              disabled={!prompt.trim()}
-              className="auto-run-btn auto-prompt-btn"
-              style={{ opacity: prompt.trim() ? 1 : 0.4 }}
-            >
-              BAŞLAT
-            </button>
-          )}
+{/* ── PROMPT BAR — altta sabit ── */}
+      {!hidePrompt && (
+        <div className="auto-prompt-fixed">
+          <div className="auto-prompt-row">
+            <textarea
+              className="prompt-input"
+              value={prompt}
+              onChange={e => {
+                setPrompt(e.target.value);
+                e.target.style.height = 'auto';
+                e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
+              }}
+              onKeyDown={handleKeyDown}
+              placeholder="Maestro'ya görev ver..."
+              disabled={isRunning}
+              rows={1}
+            />
+            {isRunning ? (
+              <button onClick={abort} className="auto-abort-btn auto-prompt-btn">■</button>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                disabled={!prompt.trim()}
+                className="auto-run-btn auto-prompt-btn"
+                style={{ opacity: prompt.trim() ? 1 : 0.4 }}
+              >
+                BAŞLAT
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

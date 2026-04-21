@@ -25,9 +25,11 @@ export default function ChatView({ messages, loading, thinkingPhase, onRetry }) 
           <div className="chat-messages">
             {messages.length === 0 && !loading && (
               <div className="chat-welcome">
-                <div className="chat-welcome-icon">✦</div>
-                <h2 className="chat-welcome-title">Maestro</h2>
-                <p className="chat-welcome-sub">3 model soruyor, en iyi cevabı sentezliyor.</p>
+               <div className="chat-welcome">
+  <span className="chat-welcome-icon">⚡</span>
+  <h2 className="chat-welcome-title">Maestro</h2>
+</div>
+<p className="chat-welcome-sub">3 model soruyor, en iyi cevabı sentezliyor.</p>
               </div>
             )}
             {messages.map((msg, i) => (
