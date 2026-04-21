@@ -806,16 +806,14 @@ body {
 
   border: 1px solid rgba(0,0,0,0.06);
 
-  box-shadow: 
-    0 4px 20px rgba(0,0,0,0.04),
-    0 1px 2px rgba(0,0,0,0.06);
+  .chat-bubble.maestro {
+  box-shadow: none;
+}
 
   transition: all 0.25s ease;
 }
 .chat-bubble.maestro:hover {
-  box-shadow: 
-    0 10px 40px rgba(0,0,0,0.08),
-    0 2px 6px rgba(0,0,0,0.08);
+  box-shadow: none;
 }
 .chat-bubble.user {
   margin-left: auto;
@@ -1661,4 +1659,64 @@ body {
   color: var(--muted, #6b7280);
   margin-top: 4px;
   display: block;
+}
+.chat-bubble-content {
+  font-family: "Crimson Pro", serif;
+  font-size: 16px;
+  line-height: 1.65;
+  color: #1a1a1a;
+}
+
+/* Paragraflar arası boşluk */
+.chat-bubble-content p {
+  margin: 12px 0;
+}
+
+/* Liste spacing */
+.chat-bubble-content ul {
+  margin: 12px 0;
+  padding-left: 20px;
+}
+
+.chat-bubble-content li {
+  margin: 6px 0;
+}
+
+/* Bold daha belirgin */
+.chat-bubble-content strong {
+  font-weight: 600;
+  color: #000;
+}
+
+/* Başlıklar */
+.chat-bubble-content h2 {
+  font-family: "Cinzel", serif;
+  font-size: 18px;
+  margin: 20px 0 10px;
+}
+
+.chat-bubble-content h3 {
+  font-size: 16px;
+  margin: 16px 0 8px;
+}
+
+/* Horizontal line (---) */
+.chat-bubble-content hr {
+  border: none;
+  border-top: 1px solid #e5e5e5;
+  margin: 20px 0;
+}
+
+/* Code blocks (ileride lazım olacak) */
+.chat-bubble-content pre {
+  background: #f6f6f6;
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+.chat-bubble.maestro {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 16px 0;
 }
