@@ -7,6 +7,7 @@ import { WORKER_URL } from "./config";
 import "./App.css";
 import "./styles/Prompt.css";
 import "./styles/autonomous.css";
+import "./styles/chat.css";
 import "./orchestrator-animations.css";
 import ReactMarkdown from "react-markdown";
 import { useOrchestrator } from "./orchestrator/OrchestratorContext.jsx";
@@ -19,10 +20,43 @@ import useMemory from "./useMemory.js";
 
 // FIX #5: provider bilgisi MODELS içine taşındı
 const MODELS = [
-  { id: "claude",  provider: "groq-llama4", name: "Llama 4 Scout",  color: "#7F77DD", initialX: 50,  initialY: 20 },
-  { id: "chatgpt", provider: "groq-gptoss", name: "GPT OSS 120B",   color: "#1D9E75", initialX: 440, initialY: 20 },
-  { id: "gemini",  provider: "groq-qwen3",  name: "Qwen 3 32B",     color: "#378ADD", initialX: 830, initialY: 20 },
+  { id: "claude",  provider: "groq-llama4", name: "Llama 4 Scout",  color: "#7F77DD" },
+  { id: "chatgpt", provider: "groq-gptoss", name: "GPT OSS 120B",   color: "#1D9E75" },
+  { id: "gemini",  provider: "groq-qwen3",  name: "Qwen 3 32B",     color: "#378ADD" },
 ];
+
+// Model panellerinin başlangıç konumu — pencere genişliğine göre hesaplanır.
+// Sığıyorsa tek sırada ortalanır, sığmıyorsa (dar ekran / sidebar açık) alt alta dizilir.
+// Böylece panel 3 (initialX: 830) her zaman ekran dışına taşmaz.
+function getPanelLayout(index, count, sidebarOpen) {
+  const PANEL_WIDTH = 340;
+  const PANEL_HEIGHT = 340;
+  const GAP = 24;
+  const TOP_OFFSET = 90;
+  const sidebarWidth = sidebarOpen ? 240 : 0;
+  const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 1280;
+  const availableWidth = Math.max(viewportWidth - sidebarWidth - 40, PANEL_WIDTH);
+  const rowWidth = count * PANEL_WIDTH + (count - 1) * GAP;
+
+  if (rowWidth <= availableWidth) {
+    const startX = sidebarWidth + 20 + (availableWidth - rowWidth) / 2;
+    return {
+      x: startX + index * (PANEL_WIDTH + GAP),
+      y: TOP_OFFSET,
+      width: PANEL_WIDTH,
+      height: PANEL_HEIGHT,
+    };
+  }
+
+  const stackWidth = Math.min(PANEL_WIDTH, availableWidth);
+  const stackX = sidebarWidth + 20 + (availableWidth - stackWidth) / 2;
+  return {
+    x: stackX,
+    y: TOP_OFFSET + index * (PANEL_HEIGHT + 20),
+    width: stackWidth,
+    height: PANEL_HEIGHT,
+  };
+}
 
 // FIX #3: Mesaj ID üretici — race condition önleme
 let nextMsgId = 1;
@@ -121,43 +155,11 @@ export default function App() {
     }
   }
 
-  // ── Otonom mod sarmalayıcılar ──
-  // FIX #5: MODELS.provider ile lookup, hardcoded map kaldırıldı
-  async function autonomousStreamModel(provider, prompt, onChunk) {
-    const model = MODELS.find(m => m.provider === provider);
-    const modelId = model ? model.id : provider;
-    const apiKey = apiKeys?.[modelId] || "";
-    await streamModel(modelId, prompt, apiKey, onChunk);
-  }
+  // Not: Otonom mod artık AppWrapper.jsx → OrchestratorProvider üzerinden
+  // kendi streamModel/judgeModel/fetchUrl'ünü alıyor (useOrchestrator context).
+  // Burada duran eski autonomousStreamModel/autonomousJudgeModel/fetchUrl
+  // kopyaları AppWrapper pattern'i eklendiğinde artık çağrılmıyordu — kaldırıldı.
 
-  async function autonomousJudgeModel(prompt) {
-    let fullText = "";
-    await streamModel("judge", prompt, apiKeys?.judgeKey || "", (token) => {
-      fullText += token;
-    });
-    if (!fullText || fullText.trim().length < 10) {
-      console.warn("Judge boş döndü, Groq fallback kullanılıyor");
-      fullText = "";
-      await streamModel("claude", prompt, apiKeys?.claude || "", (token) => {
-        fullText += token;
-      });
-    }
-    return fullText;
-}
-async function fetchUrl(targetUrl) {
-  try {
-    const res = await fetch(`${WORKER_URL}/fetch-url`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ targetUrl }),
-    });
-    const data = await res.json();
-    return data.ok ? data.content : null;
-  } catch (err) {
-    console.error('[fetchUrl] başarısız:', err);
-    return null;
-  }
-}
   // ── CHAT MODE ──
   // FIX #3: Message ID ile race condition önleme
   // FIX #6: chatLoading synthesis boyunca true kalıyor
@@ -614,19 +616,24 @@ Türkçe yaz. Markdown formatı kullan.`;
             </div>
           )}
 
-          {MODELS.map((model, idx) => (
-            <DraggablePanel
-              key={model.id}
-              id={model.id}
-              color={model.color}
-              label={model.name}
-              initialX={model.initialX}
-              initialY={model.initialY}
-              zIndex={10 + idx}
-            >
-              {renderModelContent(model.id)}
-            </DraggablePanel>
-          ))}
+          {MODELS.map((model, idx) => {
+            const layout = getPanelLayout(idx, MODELS.length, sidebarOpen);
+            return (
+              <DraggablePanel
+                key={model.id}
+                id={model.id}
+                color={model.color}
+                label={model.name}
+                initialX={layout.x}
+                initialY={layout.y}
+                initialWidth={layout.width}
+                initialHeight={layout.height}
+                zIndex={10 + idx}
+              >
+                {renderModelContent(model.id)}
+              </DraggablePanel>
+            );
+          })}
         </>
       )}
 

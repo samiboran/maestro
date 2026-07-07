@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { Rnd } from "react-rnd";
 
+function clampToViewport(x, y, width, height) {
+  if (typeof window === "undefined") return { x, y };
+  const maxX = Math.max(window.innerWidth - width - 8, 8);
+  const maxY = Math.max(window.innerHeight - height - 8, 8);
+  return {
+    x: Math.min(Math.max(x, 8), maxX),
+    y: Math.min(Math.max(y, 8), maxY),
+  };
+}
+
 export default function DraggablePanel({
   id,
   color,
@@ -12,7 +22,9 @@ export default function DraggablePanel({
   initialHeight = 350,
   zIndex = 1000
 }) {
-  const [position, setPosition] = useState({ x: initialX, y: initialY });
+  const [position, setPosition] = useState(() =>
+    clampToViewport(initialX, initialY, initialWidth, initialHeight)
+  );
   const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
   const [zIndexState, setZIndexState] = useState(zIndex);
 
@@ -26,6 +38,7 @@ export default function DraggablePanel({
   return (
     <Rnd
       className="draggable-panel"
+      data-panel-id={id}
       style={{
         '--c': color,
         zIndex: zIndexState,

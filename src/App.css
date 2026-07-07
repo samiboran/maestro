@@ -517,12 +517,6 @@ body {
   display: flex; gap: 6px; align-items: center;
   padding: 1rem 0;
 }
-.dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--muted);
-  animation: blink 1.2s ease-in-out infinite;
-}
 /* ── Synthesis Modal ── */
 .synth-modal-overlay {
   position: fixed;
@@ -759,107 +753,15 @@ body {
   margin: 0;
 }
 /* 1. Markdown İçerik Blok Yönetimi */
-.chat-bubble-content {
-  display: block;
-  width: 100%;
-  /* Metnin her iki yana yaslanmasını (justify) istersen ekleyebilirsin, 
-     ama blok soldan başlasın dersen 'left' kalmalı */
-  text-align: left !important; 
-}
 
 /* 2. Listelerin Blok Hizasını Düzeltme */
-.chat-bubble-content ul,
-.chat-bubble-content ol {
-  display: block;
-  list-style-position: outside; /* Noktalar metnin dışında kalsın */
-  padding-left: 1.2rem;         /* Noktalar için temiz bir girinti */
-  margin: 1rem 0;
-}
 
-.chat-bubble-content li {
-  display: list-item;           /* Liste öğesi davranışını zorla */
-  margin-bottom: 0.5rem;
-  text-align: left !important;
-}
 
 /* 3. Tabloları Tam Genişlik Yap (Blok hissi için) */
-.chat-bubble-content table {
-  width: 100%;
-  display: table;
-  margin: 1rem 0;
-}
 
 /* 4. Chat Bubble Maestro - Gereksiz Merkezlemeleri Kaldır */
-.chat-bubble.maestro {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* İçindeki her şeyi en sola iter */
-}
 
-.chat-bubble.maestro {
-  width: 100%;
-  padding: 20px 22px;
-  border-radius: 16px;
-
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(10px);
-
-  border: 1px solid rgba(0,0,0,0.06);
-
-  .chat-bubble.maestro {
-  box-shadow: none;
-}
-
-  transition: all 0.25s ease;
-}
-.chat-bubble.maestro:hover {
-  box-shadow: none;
-}
-.chat-bubble.user {
-  margin-left: auto;
-  max-width: 75%;
-
-  background: rgba(154,122,74,0.12);
-  border: 1px solid rgba(154,122,74,0.25);
-
-  padding: 14px 18px;
-  border-radius: 16px 16px 6px 16px;
-
-  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-}
-.chat-bubble-header {
-  margin-bottom: 10px;
-  opacity: 0.7;
-}
-.chat-bubble-content {
-  font-size: 15.5px;
-  line-height: 1.75;
-  color: rgba(0,0,0,0.85);
-}
-/* 5. Alt kısımdaki aksiyon butonlarını (Kopyala/Tekrar) sola yasla */
-.chat-actions {
-  justify-content: flex-start !important;
-  width: 100%;
-}
-.chat-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 14px;
-}
-
-.chat-action-btn {
-  border: none;
-  background: rgba(0,0,0,0.04);
-  padding: 6px 10px;
-  border-radius: 8px;
-
-  font-size: 12px;
-  font-family: 'Cinzel', serif;
-  letter-spacing: 0.05em;
-
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
+/* 5. Kopyala/Tekrar butonları artık styles/chat.css içindeki .copy-bar / .copy-btn / .retry-btn ile yönetiliyor */
 
 .prompt-input {
   border-radius: 28px;
@@ -890,253 +792,40 @@ body {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(154,122,74,0.3);
 }
-.chat-bubble.maestro::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 16px;
-  pointer-events: none;
 
-  background: linear-gradient(
-    120deg,
-    rgba(255,255,255,0.4),
-    transparent 40%
-  );
 
-  opacity: 0.3;
-}
-.chat-bubble.maestro {
-  position: relative;
-}
-.chat-action-btn {
-  transition: all 0.2s ease;
-}
 
-.chat-action-btn:hover {
-  transform: translateY(-1px) scale(1.03);
-}
-.chat-messages {
-  padding-top: 40px;
-  scroll-behavior: smooth;
-}
-.chat-action-btn:hover {
-  background: rgba(154,122,74,0.15);
-  color: var(--gold);
-}
-.chat-bubble {
-  margin-bottom: 18px;
-}
-.chat-root {
-  display: flex;
-  justify-content: center;
-}
-
-.chat-column {
-  width: 100%;
-  max-width: 720px;
-  padding: 0 16px;
-}
-
-.chat-bubble {
-  width: 100%;
-}
-
-.chat-bubble.user {
-  margin-left: auto;
-}
 /* ── Uzun kullanıcı mesajı — collapsed box ── */
-.chat-bubble.user.user-long {
-  cursor: pointer;
-  margin-left: auto;
-  position: relative;
-  max-height: 120px;
-  overflow: hidden;
-}
 
-.chat-bubble.user.user-long::after {
-  content: "";
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 48px;
-  background: linear-gradient(to bottom, transparent, rgba(154,122,74,0.08));
-  border-radius: 0 0 16px 6px;
-  pointer-events: none;
-}
 
-.chat-bubble.user.user-long:hover {
-  border-color: rgba(154,122,74,0.4);
-  box-shadow: 0 4px 16px rgba(154,122,74,0.12);
-}
 
-.user-preview {
-  margin: 0;
-  line-height: 1.6;
-  color: var(--text);
-  font-size: 1rem;
-}
 
-.user-expand-hint {
-  display: block;
-  margin-top: 6px;
-  font-family: 'Cinzel', serif;
-  font-size: 0.65rem;
-  letter-spacing: 0.1em;
-  color: var(--gold);
-  opacity: 0.8;
-}
 
 /* ── Text Modal ── */
-.text-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 1.5rem;
-}
 
-.text-modal {
-  background: var(--surface);
-  border: 1px solid rgba(154,122,74,0.2);
-  border-radius: 16px;
-  width: 100%;
-  max-width: 680px;
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.2);
-  animation: fadeIn 0.2s ease;
-}
 
-.text-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
 
-.text-modal-title {
-  font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  color: var(--gold);
-  text-transform: uppercase;
-}
 
-.text-modal-actions {
-  display: flex;
-  gap: 0.5rem;
-}
 
-.text-modal-btn {
-  background: rgba(0,0,0,0.04);
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-family: 'Cinzel', serif;
-  font-size: 0.65rem;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  color: var(--muted);
-  transition: all 0.2s;
-}
 
-.text-modal-btn:hover {
-  background: rgba(154,122,74,0.1);
-  color: var(--gold);
-}
 
-.text-modal-btn.close:hover {
-  background: rgba(200,80,80,0.08);
-  color: #c85050;
-}
 
-.text-modal-body {
-  padding: 1.5rem;
-  overflow-y: auto;
-  flex: 1;
-}
 
-.text-modal-body p {
-  font-family: 'Crimson Pro', serif;
-  font-size: 0.95rem;
-  line-height: 1.8;
-  color: var(--text);
-  font-weight: 300;
-  white-space: pre-wrap;
-  text-align: left;
-  margin: 0;
-}
 /* === COPY BAR === */
-.copy-bar {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 0.75rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid rgba(0,0,0,0.06);
-  width: 100%;
-}
 
-.copy-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  font-family: 'Crimson Pro', serif;
-  font-size: 0.8rem;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
 
-.copy-btn:hover {
-  color: var(--gold);
-  background: rgba(154,122,74,0.08);
-}
 
-.copy-btn.copied {
-  color: var(--chatgpt);
-}
 
 .copy-icon { font-size: 0.85rem; }
 .copy-text { letter-spacing: 0.04em; }
 
-.retry-btn {
-  background: none;
-  border: none;
-  font-family: 'Crimson Pro', serif;
-  font-size: 0.8rem;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
 
-.retry-btn:hover {
-  color: var(--gold);
-  background: rgba(154,122,74,0.08);
-}
 
 /* === CHAT SCROLL FIX === */
 :root {
   --prompt-height: 120px;
 }
 
-.chat-view {
-  max-width: 720px;
-  margin: 0 auto;
-  padding-bottom: calc(var(--prompt-height) + 40px);
-}
 
 .mode-chat .center-fixed {
   background: linear-gradient(to top, var(--bg) 75%, transparent 100%);
@@ -1175,43 +864,7 @@ body {
   gap: 8px;
 }
 
-/* Mod butonları — dikey, eşit boyda */
-.sidebar-mode-toggle {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 8px;
-}
-
-.mode-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  height: 36px;
-  padding: 0 12px;
-  background: none;
-  border: none;
-  border-left: 3px solid transparent;
-  border-radius: 0 6px 6px 0;
-  font-size: 0.85rem;
-  color: #6b6358;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.mode-btn:hover {
-  background: rgba(154, 122, 74, 0.08);
-  color: #1a1a1a;
-}
-
-.mode-btn.active {
-  border-left-color: #9a7a4a;
-  background: rgba(154, 122, 74, 0.12);
-  color: #1a1a1a;
-  font-weight: 600;
-}
+/* Mod butonları artık .sidebar-nav-item ile yönetiliyor (aşağıda) */
 
 /* Footer */
 .sidebar-footer {
@@ -1362,105 +1015,13 @@ body {
 .sidebar-history-delete:hover {
   opacity: 1 !important;
   background: rgba(200, 80, 80, 0.08);
-}/* ── Confidence Alert (Çelişki Uyarısı) ── */
+}/* ── Confidence Alert artık styles/chat.css içinde ── */
 
-.confidence-alert {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 10px 14px;
-  margin-bottom: 12px;
-  background: rgba(217, 119, 6, 0.06);
-  border: 1px solid rgba(217, 119, 6, 0.2);
-  border-left: 3px solid #d97706;
-  border-radius: 0 8px 8px 0;
-  animation: fadeIn 0.3s ease;
-}
+/* Sidebar Gelişmiş Modlar ve Mod Etiketleri kaldırıldı — .sidebar-nav-item
+   ile değiştirildi, artık hiçbir JSX'te kullanılmıyordu. */
 
-.confidence-alert-icon {
-  font-size: 0.95rem;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.confidence-alert-text {
-  font-family: 'Crimson Pro', serif;
-  font-size: 0.82rem;
-  color: #92400e;
-  line-height: 1.5;
-}
-/* ── Sidebar Gelişmiş Modlar ── */
- 
-.sidebar-advanced {
-  padding: 0 8px;
-}
- 
-.sidebar-advanced-toggle {
-  background: none;
-  border: none;
-  font-family: 'Cinzel', serif;
-  font-size: 0.62rem;
-  letter-spacing: 0.08em;
-  color: #9a8e7a;
-  cursor: pointer;
-  padding: 6px 4px;
-  text-transform: uppercase;
-  width: 100%;
-  text-align: left;
-}
- 
-.sidebar-advanced-toggle:hover {
-  color: #1a1a1a;
-}
- 
-.sidebar-advanced-modes {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding-left: 4px;
-}
- 
-/* Mod etiketleri (Debug, Beta) */
-.mode-tag {
-  font-family: 'Cinzel', serif;
-  font-size: 0.5rem;
-  letter-spacing: 0.08em;
-  padding: 1px 5px;
-  border-radius: 4px;
-  margin-left: auto;
-  text-transform: uppercase;
-  font-weight: 600;
-}
- 
-.mode-tag.debug {
-  color: #6b7280;
-  background: rgba(107, 114, 128, 0.1);
-  border: 1px solid rgba(107, 114, 128, 0.2);
-}
- 
-.mode-tag.beta {
-  color: #d97706;
-  background: rgba(217, 119, 6, 0.08);
-  border: 1px solid rgba(217, 119, 6, 0.2);
-}
- 
 /* ══════════════════════════════════════════════════════
    SIDEBAR NAV — Gemini tarzı minimal, hizalı sidebar
-   
-   Bu CSS'i App.css'in sonuna EKLE.
-   
-   Eski şu blokları App.css'ten SİL:
-   - .sidebar-mode-toggle { ... }
-   - .mode-btn { ... }
-   - .mode-btn:hover { ... }
-   - .mode-btn.active { ... }
-   - .sidebar-advanced { ... }
-   - .sidebar-advanced-toggle { ... }
-   - .sidebar-advanced-toggle:hover { ... }
-   - .sidebar-advanced-modes { ... }
-   - .mode-tag { ... }
-   - .mode-tag.debug { ... }
-   - .mode-tag.beta { ... }
    ══════════════════════════════════════════════════════ */
 
 /* Nav grubu */
@@ -1572,151 +1133,30 @@ body {
   background: linear-gradient(90deg, transparent, #d4cbb8, transparent);
 }
 /* ── Hayalet çizgi temizliği ── */
-.chat-view,
-.chat-column,
-.chat-root,
-.chat-messages,
-.maestro-root {
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
 
 .center-fixed {
   border: none !important;
   box-shadow: none !important;
 }
 /* ── Welcome başlığı font tutarlılığı ── */
-.chat-welcome-title {
-  font-family: 'Cinzel', serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--text);
-  margin: 0;
-}
 /* ── Tüm mod başlıkları — pixel-perfect hizalama ── */
-.chat-welcome-title,
-.auto-title {
-  font-family: 'Cinzel', serif !important;
-  font-size: 1.2rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.08em !important;
-  line-height: 1.4 !important;
-  color: var(--text) !important;
-  margin: 0 !important;
-}
 /* ── Mod başlıkları — eşit üst boşluk ── */
-.chat-welcome {
-  padding-top: 0 !important;
-  margin-top: 0 !important;
-}
 
-.chat-messages {
-  padding-top: 24px !important;
-}
-.chat-welcome-title,
-.auto-title {
-  font-family: 'Cinzel', serif !important;
-  font-size: 1.2rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.08em !important;
-  line-height: 1.4 !important;
-  color: var(--text) !important;
-  margin: 0 !important;
-}
-.chat-welcome-title {
-  font-family: 'Cinzel', serif !important;
-  font-size: 1.2rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.08em !important;
-  color: var(--text, #1a1a1a) !important;
-  margin: 0 !important;
-}
 /* ── Chat welcome — Otonom ile aynı layout ── */
-.chat-welcome {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 20px;
-}
 
-.chat-welcome-icon {
-  font-size: 1.1rem;
-  display: inline;
-  margin-right: 6px;
-}
 
-.chat-welcome-title {
-  display: inline;
-}
 
-.chat-welcome-sub {
-  font-family: 'Crimson Pro', Georgia, serif;
-  font-size: 0.82rem;
-  color: var(--muted, #6b7280);
-  margin-top: 4px;
-  display: block;
-}
-.chat-bubble-content {
-  font-family: "Crimson Pro", serif;
-  font-size: 16px;
-  line-height: 1.65;
-  color: #1a1a1a;
-}
 
 /* Paragraflar arası boşluk */
-.chat-bubble-content p {
-  margin: 12px 0;
-}
 
 /* Liste spacing */
-.chat-bubble-content ul {
-  margin: 12px 0;
-  padding-left: 20px;
-}
 
-.chat-bubble-content li {
-  margin: 6px 0;
-}
 
 /* Bold daha belirgin */
-.chat-bubble-content strong {
-  font-weight: 600;
-  color: #000;
-}
 
 /* Başlıklar */
-.chat-bubble-content h2 {
-  font-family: "Cinzel", serif;
-  font-size: 18px;
-  margin: 20px 0 10px;
-}
 
-.chat-bubble-content h3 {
-  font-size: 16px;
-  margin: 16px 0 8px;
-}
 
 /* Horizontal line (---) */
-.chat-bubble-content hr {
-  border: none;
-  border-top: 1px solid #e5e5e5;
-  margin: 20px 0;
-}
 
 /* Code blocks (ileride lazım olacak) */
-.chat-bubble-content pre {
-  background: #f6f6f6;
-  padding: 12px;
-  border-radius: 8px;
-  overflow-x: auto;
-}
-.chat-bubble.maestro {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 16px 0;
-}

@@ -1,0 +1,1712 @@
+diff --git a/package-lock.json b/package-lock.json
+index 1d8997c..d3e8805 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -721,9 +721,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -741,9 +738,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -761,9 +755,6 @@
+         "ppc64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -781,9 +772,6 @@
+         "s390x"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -801,9 +789,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -821,9 +806,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2534,9 +2516,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MPL-2.0",
+       "optional": true,
+       "os": [
+@@ -2558,9 +2537,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MPL-2.0",
+       "optional": true,
+       "os": [
+@@ -2582,9 +2558,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MPL-2.0",
+       "optional": true,
+       "os": [
+@@ -2606,9 +2579,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MPL-2.0",
+       "optional": true,
+       "os": [
+diff --git a/src/App.css b/src/App.css
+index 7871548..f5bd2d4 100644
+--- a/src/App.css
++++ b/src/App.css
+@@ -517,12 +517,6 @@ body {
+   display: flex; gap: 6px; align-items: center;
+   padding: 1rem 0;
+ }
+-.dot {
+-  width: 6px; height: 6px;
+-  border-radius: 50%;
+-  background: var(--muted);
+-  animation: blink 1.2s ease-in-out infinite;
+-}
+ /* ── Synthesis Modal ── */
+ .synth-modal-overlay {
+   position: fixed;
+@@ -759,107 +753,15 @@ body {
+   margin: 0;
+ }
+ /* 1. Markdown İçerik Blok Yönetimi */
+-.chat-bubble-content {
+-  display: block;
+-  width: 100%;
+-  /* Metnin her iki yana yaslanmasını (justify) istersen ekleyebilirsin, 
+-     ama blok soldan başlasın dersen 'left' kalmalı */
+-  text-align: left !important; 
+-}
+ 
+ /* 2. Listelerin Blok Hizasını Düzeltme */
+-.chat-bubble-content ul,
+-.chat-bubble-content ol {
+-  display: block;
+-  list-style-position: outside; /* Noktalar metnin dışında kalsın */
+-  padding-left: 1.2rem;         /* Noktalar için temiz bir girinti */
+-  margin: 1rem 0;
+-}
+ 
+-.chat-bubble-content li {
+-  display: list-item;           /* Liste öğesi davranışını zorla */
+-  margin-bottom: 0.5rem;
+-  text-align: left !important;
+-}
+ 
+ /* 3. Tabloları Tam Genişlik Yap (Blok hissi için) */
+-.chat-bubble-content table {
+-  width: 100%;
+-  display: table;
+-  margin: 1rem 0;
+-}
+ 
+ /* 4. Chat Bubble Maestro - Gereksiz Merkezlemeleri Kaldır */
+-.chat-bubble.maestro {
+-  display: flex;
+-  flex-direction: column;
+-  align-items: flex-start; /* İçindeki her şeyi en sola iter */
+-}
+-
+-.chat-bubble.maestro {
+-  width: 100%;
+-  padding: 20px 22px;
+-  border-radius: 16px;
+-
+-  background: rgba(255,255,255,0.65);
+-  backdrop-filter: blur(10px);
+-
+-  border: 1px solid rgba(0,0,0,0.06);
+-
+-  .chat-bubble.maestro {
+-  box-shadow: none;
+-}
+-
+-  transition: all 0.25s ease;
+-}
+-.chat-bubble.maestro:hover {
+-  box-shadow: none;
+-}
+-.chat-bubble.user {
+-  margin-left: auto;
+-  max-width: 75%;
+-
+-  background: rgba(154,122,74,0.12);
+-  border: 1px solid rgba(154,122,74,0.25);
+-
+-  padding: 14px 18px;
+-  border-radius: 16px 16px 6px 16px;
+-
+-  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+-}
+-.chat-bubble-header {
+-  margin-bottom: 10px;
+-  opacity: 0.7;
+-}
+-.chat-bubble-content {
+-  font-size: 15.5px;
+-  line-height: 1.75;
+-  color: rgba(0,0,0,0.85);
+-}
+-/* 5. Alt kısımdaki aksiyon butonlarını (Kopyala/Tekrar) sola yasla */
+-.chat-actions {
+-  justify-content: flex-start !important;
+-  width: 100%;
+-}
+-.chat-actions {
+-  display: flex;
+-  gap: 12px;
+-  margin-top: 14px;
+-}
+-
+-.chat-action-btn {
+-  border: none;
+-  background: rgba(0,0,0,0.04);
+-  padding: 6px 10px;
+-  border-radius: 8px;
+-
+-  font-size: 12px;
+-  font-family: 'Cinzel', serif;
+-  letter-spacing: 0.05em;
+ 
+-  cursor: pointer;
+-  transition: all 0.2s ease;
+-}
++/* 5. Kopyala/Tekrar butonları artık styles/chat.css içindeki .copy-bar / .copy-btn / .retry-btn ile yönetiliyor */
+ 
+ .prompt-input {
+   border-radius: 28px;
+@@ -890,253 +792,40 @@ body {
+   transform: translateY(-1px);
+   box-shadow: 0 6px 20px rgba(154,122,74,0.3);
+ }
+-.chat-bubble.maestro::after {
+-  content: "";
+-  position: absolute;
+-  inset: 0;
+-  border-radius: 16px;
+-  pointer-events: none;
+ 
+-  background: linear-gradient(
+-    120deg,
+-    rgba(255,255,255,0.4),
+-    transparent 40%
+-  );
+ 
+-  opacity: 0.3;
+-}
+-.chat-bubble.maestro {
+-  position: relative;
+-}
+-.chat-action-btn {
+-  transition: all 0.2s ease;
+-}
+ 
+-.chat-action-btn:hover {
+-  transform: translateY(-1px) scale(1.03);
+-}
+-.chat-messages {
+-  padding-top: 40px;
+-  scroll-behavior: smooth;
+-}
+-.chat-action-btn:hover {
+-  background: rgba(154,122,74,0.15);
+-  color: var(--gold);
+-}
+-.chat-bubble {
+-  margin-bottom: 18px;
+-}
+-.chat-root {
+-  display: flex;
+-  justify-content: center;
+-}
+-
+-.chat-column {
+-  width: 100%;
+-  max-width: 720px;
+-  padding: 0 16px;
+-}
+-
+-.chat-bubble {
+-  width: 100%;
+-}
+-
+-.chat-bubble.user {
+-  margin-left: auto;
+-}
+ /* ── Uzun kullanıcı mesajı — collapsed box ── */
+-.chat-bubble.user.user-long {
+-  cursor: pointer;
+-  margin-left: auto;
+-  position: relative;
+-  max-height: 120px;
+-  overflow: hidden;
+-}
+ 
+-.chat-bubble.user.user-long::after {
+-  content: "";
+-  position: absolute;
+-  bottom: 0; left: 0; right: 0;
+-  height: 48px;
+-  background: linear-gradient(to bottom, transparent, rgba(154,122,74,0.08));
+-  border-radius: 0 0 16px 6px;
+-  pointer-events: none;
+-}
+ 
+-.chat-bubble.user.user-long:hover {
+-  border-color: rgba(154,122,74,0.4);
+-  box-shadow: 0 4px 16px rgba(154,122,74,0.12);
+-}
+ 
+-.user-preview {
+-  margin: 0;
+-  line-height: 1.6;
+-  color: var(--text);
+-  font-size: 1rem;
+-}
+ 
+-.user-expand-hint {
+-  display: block;
+-  margin-top: 6px;
+-  font-family: 'Cinzel', serif;
+-  font-size: 0.65rem;
+-  letter-spacing: 0.1em;
+-  color: var(--gold);
+-  opacity: 0.8;
+-}
+ 
+ /* ── Text Modal ── */
+-.text-modal-overlay {
+-  position: fixed;
+-  inset: 0;
+-  background: rgba(0, 0, 0, 0.5);
+-  backdrop-filter: blur(6px);
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  z-index: 9999;
+-  padding: 1.5rem;
+-}
+ 
+-.text-modal {
+-  background: var(--surface);
+-  border: 1px solid rgba(154,122,74,0.2);
+-  border-radius: 16px;
+-  width: 100%;
+-  max-width: 680px;
+-  max-height: 80vh;
+-  display: flex;
+-  flex-direction: column;
+-  box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+-  animation: fadeIn 0.2s ease;
+-}
+ 
+-.text-modal-header {
+-  display: flex;
+-  align-items: center;
+-  justify-content: space-between;
+-  padding: 1rem 1.25rem;
+-  border-bottom: 1px solid var(--border);
+-  flex-shrink: 0;
+-}
+ 
+-.text-modal-title {
+-  font-family: 'Cinzel', serif;
+-  font-size: 0.75rem;
+-  letter-spacing: 0.12em;
+-  color: var(--gold);
+-  text-transform: uppercase;
+-}
+ 
+-.text-modal-actions {
+-  display: flex;
+-  gap: 0.5rem;
+-}
+ 
+-.text-modal-btn {
+-  background: rgba(0,0,0,0.04);
+-  border: none;
+-  padding: 6px 12px;
+-  border-radius: 8px;
+-  font-family: 'Cinzel', serif;
+-  font-size: 0.65rem;
+-  letter-spacing: 0.08em;
+-  cursor: pointer;
+-  color: var(--muted);
+-  transition: all 0.2s;
+-}
+ 
+-.text-modal-btn:hover {
+-  background: rgba(154,122,74,0.1);
+-  color: var(--gold);
+-}
+ 
+-.text-modal-btn.close:hover {
+-  background: rgba(200,80,80,0.08);
+-  color: #c85050;
+-}
+ 
+-.text-modal-body {
+-  padding: 1.5rem;
+-  overflow-y: auto;
+-  flex: 1;
+-}
+ 
+-.text-modal-body p {
+-  font-family: 'Crimson Pro', serif;
+-  font-size: 0.95rem;
+-  line-height: 1.8;
+-  color: var(--text);
+-  font-weight: 300;
+-  white-space: pre-wrap;
+-  text-align: left;
+-  margin: 0;
+-}
+ /* === COPY BAR === */
+-.copy-bar {
+-  display: flex;
+-  align-items: center;
+-  gap: 1rem;
+-  margin-top: 0.75rem;
+-  padding-top: 0.5rem;
+-  border-top: 1px solid rgba(0,0,0,0.06);
+-  width: 100%;
+-}
+ 
+-.copy-btn {
+-  display: flex;
+-  align-items: center;
+-  gap: 6px;
+-  background: none;
+-  border: none;
+-  font-family: 'Crimson Pro', serif;
+-  font-size: 0.8rem;
+-  color: var(--muted);
+-  cursor: pointer;
+-  padding: 4px 6px;
+-  border-radius: 6px;
+-  transition: all 0.2s ease;
+-}
+ 
+-.copy-btn:hover {
+-  color: var(--gold);
+-  background: rgba(154,122,74,0.08);
+-}
+ 
+-.copy-btn.copied {
+-  color: var(--chatgpt);
+-}
+ 
+ .copy-icon { font-size: 0.85rem; }
+ .copy-text { letter-spacing: 0.04em; }
+ 
+-.retry-btn {
+-  background: none;
+-  border: none;
+-  font-family: 'Crimson Pro', serif;
+-  font-size: 0.8rem;
+-  color: var(--muted);
+-  cursor: pointer;
+-  padding: 4px 6px;
+-  border-radius: 6px;
+-  transition: all 0.2s ease;
+-}
+ 
+-.retry-btn:hover {
+-  color: var(--gold);
+-  background: rgba(154,122,74,0.08);
+-}
+ 
+ /* === CHAT SCROLL FIX === */
+ :root {
+   --prompt-height: 120px;
+ }
+ 
+-.chat-view {
+-  max-width: 720px;
+-  margin: 0 auto;
+-  padding-bottom: calc(var(--prompt-height) + 40px);
+-}
+ 
+ .mode-chat .center-fixed {
+   background: linear-gradient(to top, var(--bg) 75%, transparent 100%);
+@@ -1175,43 +864,7 @@ body {
+   gap: 8px;
+ }
+ 
+-/* Mod butonları — dikey, eşit boyda */
+-.sidebar-mode-toggle {
+-  display: flex;
+-  flex-direction: column;
+-  gap: 2px;
+-  padding: 8px;
+-}
+-
+-.mode-btn {
+-  display: flex;
+-  align-items: center;
+-  gap: 8px;
+-  width: 100%;
+-  height: 36px;
+-  padding: 0 12px;
+-  background: none;
+-  border: none;
+-  border-left: 3px solid transparent;
+-  border-radius: 0 6px 6px 0;
+-  font-size: 0.85rem;
+-  color: #6b6358;
+-  cursor: pointer;
+-  text-align: left;
+-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+-}
+-
+-.mode-btn:hover {
+-  background: rgba(154, 122, 74, 0.08);
+-  color: #1a1a1a;
+-}
+-
+-.mode-btn.active {
+-  border-left-color: #9a7a4a;
+-  background: rgba(154, 122, 74, 0.12);
+-  color: #1a1a1a;
+-  font-weight: 600;
+-}
++/* Mod butonları artık .sidebar-nav-item ile yönetiliyor (aşağıda) */
+ 
+ /* Footer */
+ .sidebar-footer {
+@@ -1362,105 +1015,13 @@ body {
+ .sidebar-history-delete:hover {
+   opacity: 1 !important;
+   background: rgba(200, 80, 80, 0.08);
+-}/* ── Confidence Alert (Çelişki Uyarısı) ── */
+-
+-.confidence-alert {
+-  display: flex;
+-  align-items: flex-start;
+-  gap: 8px;
+-  padding: 10px 14px;
+-  margin-bottom: 12px;
+-  background: rgba(217, 119, 6, 0.06);
+-  border: 1px solid rgba(217, 119, 6, 0.2);
+-  border-left: 3px solid #d97706;
+-  border-radius: 0 8px 8px 0;
+-  animation: fadeIn 0.3s ease;
+-}
++}/* ── Confidence Alert artık styles/chat.css içinde ── */
+ 
+-.confidence-alert-icon {
+-  font-size: 0.95rem;
+-  flex-shrink: 0;
+-  margin-top: 1px;
+-}
++/* Sidebar Gelişmiş Modlar ve Mod Etiketleri kaldırıldı — .sidebar-nav-item
++   ile değiştirildi, artık hiçbir JSX'te kullanılmıyordu. */
+ 
+-.confidence-alert-text {
+-  font-family: 'Crimson Pro', serif;
+-  font-size: 0.82rem;
+-  color: #92400e;
+-  line-height: 1.5;
+-}
+-/* ── Sidebar Gelişmiş Modlar ── */
+- 
+-.sidebar-advanced {
+-  padding: 0 8px;
+-}
+- 
+-.sidebar-advanced-toggle {
+-  background: none;
+-  border: none;
+-  font-family: 'Cinzel', serif;
+-  font-size: 0.62rem;
+-  letter-spacing: 0.08em;
+-  color: #9a8e7a;
+-  cursor: pointer;
+-  padding: 6px 4px;
+-  text-transform: uppercase;
+-  width: 100%;
+-  text-align: left;
+-}
+- 
+-.sidebar-advanced-toggle:hover {
+-  color: #1a1a1a;
+-}
+- 
+-.sidebar-advanced-modes {
+-  display: flex;
+-  flex-direction: column;
+-  gap: 2px;
+-  padding-left: 4px;
+-}
+- 
+-/* Mod etiketleri (Debug, Beta) */
+-.mode-tag {
+-  font-family: 'Cinzel', serif;
+-  font-size: 0.5rem;
+-  letter-spacing: 0.08em;
+-  padding: 1px 5px;
+-  border-radius: 4px;
+-  margin-left: auto;
+-  text-transform: uppercase;
+-  font-weight: 600;
+-}
+- 
+-.mode-tag.debug {
+-  color: #6b7280;
+-  background: rgba(107, 114, 128, 0.1);
+-  border: 1px solid rgba(107, 114, 128, 0.2);
+-}
+- 
+-.mode-tag.beta {
+-  color: #d97706;
+-  background: rgba(217, 119, 6, 0.08);
+-  border: 1px solid rgba(217, 119, 6, 0.2);
+-}
+- 
+ /* ══════════════════════════════════════════════════════
+    SIDEBAR NAV — Gemini tarzı minimal, hizalı sidebar
+-   
+-   Bu CSS'i App.css'in sonuna EKLE.
+-   
+-   Eski şu blokları App.css'ten SİL:
+-   - .sidebar-mode-toggle { ... }
+-   - .mode-btn { ... }
+-   - .mode-btn:hover { ... }
+-   - .mode-btn.active { ... }
+-   - .sidebar-advanced { ... }
+-   - .sidebar-advanced-toggle { ... }
+-   - .sidebar-advanced-toggle:hover { ... }
+-   - .sidebar-advanced-modes { ... }
+-   - .mode-tag { ... }
+-   - .mode-tag.debug { ... }
+-   - .mode-tag.beta { ... }
+    ══════════════════════════════════════════════════════ */
+ 
+ /* Nav grubu */
+@@ -1572,151 +1133,30 @@ body {
+   background: linear-gradient(90deg, transparent, #d4cbb8, transparent);
+ }
+ /* ── Hayalet çizgi temizliği ── */
+-.chat-view,
+-.chat-column,
+-.chat-root,
+-.chat-messages,
+-.maestro-root {
+-  border: none !important;
+-  box-shadow: none !important;
+-  outline: none !important;
+-}
+ 
+ .center-fixed {
+   border: none !important;
+   box-shadow: none !important;
+ }
+ /* ── Welcome başlığı font tutarlılığı ── */
+-.chat-welcome-title {
+-  font-family: 'Cinzel', serif;
+-  font-size: 1.2rem;
+-  font-weight: 600;
+-  letter-spacing: 0.08em;
+-  color: var(--text);
+-  margin: 0;
+-}
+ /* ── Tüm mod başlıkları — pixel-perfect hizalama ── */
+-.chat-welcome-title,
+-.auto-title {
+-  font-family: 'Cinzel', serif !important;
+-  font-size: 1.2rem !important;
+-  font-weight: 600 !important;
+-  letter-spacing: 0.08em !important;
+-  line-height: 1.4 !important;
+-  color: var(--text) !important;
+-  margin: 0 !important;
+-}
+ /* ── Mod başlıkları — eşit üst boşluk ── */
+-.chat-welcome {
+-  padding-top: 0 !important;
+-  margin-top: 0 !important;
+-}
+-
+-.chat-messages {
+-  padding-top: 24px !important;
+-}
+-.chat-welcome-title,
+-.auto-title {
+-  font-family: 'Cinzel', serif !important;
+-  font-size: 1.2rem !important;
+-  font-weight: 600 !important;
+-  letter-spacing: 0.08em !important;
+-  line-height: 1.4 !important;
+-  color: var(--text) !important;
+-  margin: 0 !important;
+-}
+-.chat-welcome-title {
+-  font-family: 'Cinzel', serif !important;
+-  font-size: 1.2rem !important;
+-  font-weight: 600 !important;
+-  letter-spacing: 0.08em !important;
+-  color: var(--text, #1a1a1a) !important;
+-  margin: 0 !important;
+-}
++
+ /* ── Chat welcome — Otonom ile aynı layout ── */
+-.chat-welcome {
+-  text-align: center;
+-  display: flex;
+-  flex-direction: column;
+-  align-items: center;
+-  gap: 4px;
+-  margin-bottom: 20px;
+-}
+ 
+-.chat-welcome-icon {
+-  font-size: 1.1rem;
+-  display: inline;
+-  margin-right: 6px;
+-}
+ 
+-.chat-welcome-title {
+-  display: inline;
+-}
+ 
+-.chat-welcome-sub {
+-  font-family: 'Crimson Pro', Georgia, serif;
+-  font-size: 0.82rem;
+-  color: var(--muted, #6b7280);
+-  margin-top: 4px;
+-  display: block;
+-}
+-.chat-bubble-content {
+-  font-family: "Crimson Pro", serif;
+-  font-size: 16px;
+-  line-height: 1.65;
+-  color: #1a1a1a;
+-}
+ 
+ /* Paragraflar arası boşluk */
+-.chat-bubble-content p {
+-  margin: 12px 0;
+-}
+ 
+ /* Liste spacing */
+-.chat-bubble-content ul {
+-  margin: 12px 0;
+-  padding-left: 20px;
+-}
+ 
+-.chat-bubble-content li {
+-  margin: 6px 0;
+-}
+ 
+ /* Bold daha belirgin */
+-.chat-bubble-content strong {
+-  font-weight: 600;
+-  color: #000;
+-}
+ 
+ /* Başlıklar */
+-.chat-bubble-content h2 {
+-  font-family: "Cinzel", serif;
+-  font-size: 18px;
+-  margin: 20px 0 10px;
+-}
+ 
+-.chat-bubble-content h3 {
+-  font-size: 16px;
+-  margin: 16px 0 8px;
+-}
+ 
+ /* Horizontal line (---) */
+-.chat-bubble-content hr {
+-  border: none;
+-  border-top: 1px solid #e5e5e5;
+-  margin: 20px 0;
+-}
+ 
+-/* Code blocks (ileride lazım olacak) */
+-.chat-bubble-content pre {
+-  background: #f6f6f6;
+-  padding: 12px;
+-  border-radius: 8px;
+-  overflow-x: auto;
+-}
+-.chat-bubble.maestro {
+-  background: transparent;
+-  border: none;
+-  border-radius: 0;
+-  padding: 16px 0;
+-}
+\ No newline at end of file
++/* Code blocks (ileride lazım olacak) */
+\ No newline at end of file
+diff --git a/src/App.jsx b/src/App.jsx
+index 0dfa948..3f3de01 100644
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -7,6 +7,7 @@ import { WORKER_URL } from "./config";
+ import "./App.css";
+ import "./styles/Prompt.css";
+ import "./styles/autonomous.css";
++import "./styles/chat.css";
+ import "./orchestrator-animations.css";
+ import ReactMarkdown from "react-markdown";
+ import { useOrchestrator } from "./orchestrator/OrchestratorContext.jsx";
+@@ -19,11 +20,44 @@ import useMemory from "./useMemory.js";
+ 
+ // FIX #5: provider bilgisi MODELS içine taşındı
+ const MODELS = [
+-  { id: "claude",  provider: "groq-llama4", name: "Llama 4 Scout",  color: "#7F77DD", initialX: 50,  initialY: 20 },
+-  { id: "chatgpt", provider: "groq-gptoss", name: "GPT OSS 120B",   color: "#1D9E75", initialX: 440, initialY: 20 },
+-  { id: "gemini",  provider: "groq-qwen3",  name: "Qwen 3 32B",     color: "#378ADD", initialX: 830, initialY: 20 },
++  { id: "claude",  provider: "groq-llama4", name: "Llama 4 Scout",  color: "#7F77DD" },
++  { id: "chatgpt", provider: "groq-gptoss", name: "GPT OSS 120B",   color: "#1D9E75" },
++  { id: "gemini",  provider: "groq-qwen3",  name: "Qwen 3 32B",     color: "#378ADD" },
+ ];
+ 
++// Model panellerinin başlangıç konumu — pencere genişliğine göre hesaplanır.
++// Sığıyorsa tek sırada ortalanır, sığmıyorsa (dar ekran / sidebar açık) alt alta dizilir.
++// Böylece panel 3 (initialX: 830) her zaman ekran dışına taşmaz.
++function getPanelLayout(index, count, sidebarOpen) {
++  const PANEL_WIDTH = 340;
++  const PANEL_HEIGHT = 340;
++  const GAP = 24;
++  const TOP_OFFSET = 90;
++  const sidebarWidth = sidebarOpen ? 240 : 0;
++  const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 1280;
++  const availableWidth = Math.max(viewportWidth - sidebarWidth - 40, PANEL_WIDTH);
++  const rowWidth = count * PANEL_WIDTH + (count - 1) * GAP;
++
++  if (rowWidth <= availableWidth) {
++    const startX = sidebarWidth + 20 + (availableWidth - rowWidth) / 2;
++    return {
++      x: startX + index * (PANEL_WIDTH + GAP),
++      y: TOP_OFFSET,
++      width: PANEL_WIDTH,
++      height: PANEL_HEIGHT,
++    };
++  }
++
++  const stackWidth = Math.min(PANEL_WIDTH, availableWidth);
++  const stackX = sidebarWidth + 20 + (availableWidth - stackWidth) / 2;
++  return {
++    x: stackX,
++    y: TOP_OFFSET + index * (PANEL_HEIGHT + 20),
++    width: stackWidth,
++    height: PANEL_HEIGHT,
++  };
++}
++
+ // FIX #3: Mesaj ID üretici — race condition önleme
+ let nextMsgId = 1;
+ function genMsgId() { return `msg-${Date.now()}-${nextMsgId++}`; }
+@@ -121,43 +155,11 @@ export default function App() {
+     }
+   }
+ 
+-  // ── Otonom mod sarmalayıcılar ──
+-  // FIX #5: MODELS.provider ile lookup, hardcoded map kaldırıldı
+-  async function autonomousStreamModel(provider, prompt, onChunk) {
+-    const model = MODELS.find(m => m.provider === provider);
+-    const modelId = model ? model.id : provider;
+-    const apiKey = apiKeys?.[modelId] || "";
+-    await streamModel(modelId, prompt, apiKey, onChunk);
+-  }
++  // Not: Otonom mod artık AppWrapper.jsx → OrchestratorProvider üzerinden
++  // kendi streamModel/judgeModel/fetchUrl'ünü alıyor (useOrchestrator context).
++  // Burada duran eski autonomousStreamModel/autonomousJudgeModel/fetchUrl
++  // kopyaları AppWrapper pattern'i eklendiğinde artık çağrılmıyordu — kaldırıldı.
+ 
+-  async function autonomousJudgeModel(prompt) {
+-    let fullText = "";
+-    await streamModel("judge", prompt, apiKeys?.judgeKey || "", (token) => {
+-      fullText += token;
+-    });
+-    if (!fullText || fullText.trim().length < 10) {
+-      console.warn("Judge boş döndü, Groq fallback kullanılıyor");
+-      fullText = "";
+-      await streamModel("claude", prompt, apiKeys?.claude || "", (token) => {
+-        fullText += token;
+-      });
+-    }
+-    return fullText;
+-}
+-async function fetchUrl(targetUrl) {
+-  try {
+-    const res = await fetch(`${WORKER_URL}/fetch-url`, {
+-      method: 'POST',
+-      headers: { 'Content-Type': 'application/json' },
+-      body: JSON.stringify({ targetUrl }),
+-    });
+-    const data = await res.json();
+-    return data.ok ? data.content : null;
+-  } catch (err) {
+-    console.error('[fetchUrl] başarısız:', err);
+-    return null;
+-  }
+-}
+   // ── CHAT MODE ──
+   // FIX #3: Message ID ile race condition önleme
+   // FIX #6: chatLoading synthesis boyunca true kalıyor
+@@ -614,19 +616,24 @@ Türkçe yaz. Markdown formatı kullan.`;
+             </div>
+           )}
+ 
+-          {MODELS.map((model, idx) => (
+-            <DraggablePanel
+-              key={model.id}
+-              id={model.id}
+-              color={model.color}
+-              label={model.name}
+-              initialX={model.initialX}
+-              initialY={model.initialY}
+-              zIndex={10 + idx}
+-            >
+-              {renderModelContent(model.id)}
+-            </DraggablePanel>
+-          ))}
++          {MODELS.map((model, idx) => {
++            const layout = getPanelLayout(idx, MODELS.length, sidebarOpen);
++            return (
++              <DraggablePanel
++                key={model.id}
++                id={model.id}
++                color={model.color}
++                label={model.name}
++                initialX={layout.x}
++                initialY={layout.y}
++                initialWidth={layout.width}
++                initialHeight={layout.height}
++                zIndex={10 + idx}
++              >
++                {renderModelContent(model.id)}
++              </DraggablePanel>
++            );
++          })}
+         </>
+       )}
+ 
+diff --git a/src/components/DraggablePanel.jsx b/src/components/DraggablePanel.jsx
+index 0e67224..da05a62 100644
+--- a/src/components/DraggablePanel.jsx
++++ b/src/components/DraggablePanel.jsx
+@@ -1,6 +1,16 @@
+ import { useState } from "react";
+ import { Rnd } from "react-rnd";
+ 
++function clampToViewport(x, y, width, height) {
++  if (typeof window === "undefined") return { x, y };
++  const maxX = Math.max(window.innerWidth - width - 8, 8);
++  const maxY = Math.max(window.innerHeight - height - 8, 8);
++  return {
++    x: Math.min(Math.max(x, 8), maxX),
++    y: Math.min(Math.max(y, 8), maxY),
++  };
++}
++
+ export default function DraggablePanel({
+   id,
+   color,
+@@ -12,7 +22,9 @@ export default function DraggablePanel({
+   initialHeight = 350,
+   zIndex = 1000
+ }) {
+-  const [position, setPosition] = useState({ x: initialX, y: initialY });
++  const [position, setPosition] = useState(() =>
++    clampToViewport(initialX, initialY, initialWidth, initialHeight)
++  );
+   const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
+   const [zIndexState, setZIndexState] = useState(zIndex);
+ 
+@@ -26,6 +38,7 @@ export default function DraggablePanel({
+   return (
+     <Rnd
+       className="draggable-panel"
++      data-panel-id={id}
+       style={{
+         '--c': color,
+         zIndex: zIndexState,
+diff --git a/src/styles/chat.css b/src/styles/chat.css
+index be101b7..bd00c23 100644
+--- a/src/styles/chat.css
++++ b/src/styles/chat.css
+@@ -1,303 +1,322 @@
+-/* ══════════════════════════════════════
+-   CHAT MODE STYLES
+-   ══════════════════════════════════════ */
+-
+-.chat-view, .chat-view * { text-align: left !important; }
++/* ══════════════════════════════════════════════════════════
++   CHAT MODE — tek kaynak stylesheet
++   Bu dosya App.css'teki TÜM .chat-*, .thinking-*, .model-toggle*,
++   .model-accordion*, .text-modal*, .confidence-alert*, .copy-*,
++   .retry-btn kurallarının yerini alır. App.css'te bunların
++   hiçbir kopyası kalmamalı — tek kaynak burasıdır.
++
++   Tasarım yönü: Claude.ai'nin mesaj listesi gibi — asistan
++   mesajı kart/balon değil, düz metin; kullanıcı mesajı hafif,
++   sağa yaslı bir balon. Kalabalık gölge/blur/gradient yok.
++   ══════════════════════════════════════════════════════════ */
++
++.chat-root {
++  display: flex;
++  justify-content: center;
++  width: 100%;
++}
+ 
+ .chat-view {
++  width: 100%;
++}
++
++.chat-column {
++  width: 100%;
+   max-width: 720px;
++  padding: 0 16px;
+   margin: 0 auto;
+-  padding-bottom: 220px;
+-  mask-image: linear-gradient(
+-    to bottom,
+-    black 0%,
+-    black 80%,
+-    rgba(0, 0, 0, 0.5) 90%,
+-    transparent 100%
+-  );
+-  -webkit-mask-image: linear-gradient(
+-    to bottom,
+-    black 0%,
+-    black 80%,
+-    rgba(0, 0, 0, 0.5) 95%,
+-    transparent 100%
+-  );
+ }
+ 
+ .chat-messages {
+-  margin-top: 40px;
++  padding-top: 32px;
++  padding-bottom: 24px;
++  scroll-behavior: smooth;
+ }
+ 
+-.chat-bubble-header {
+-  margin-bottom: 2rem;
+-  padding-top: 10px;
+-}
+-
+-/* Welcome Screen */
++/* ── Karşılama ekranı ── */
+ .chat-welcome {
++  text-align: center;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+-  justify-content: center;
+-  min-height: 50vh;
+-  text-align: center;
+-  animation: fadeIn 0.6s ease;
++  gap: 4px;
++  margin: 40px 0 32px;
+ }
+ 
+ .chat-welcome-icon {
+-  font-size: 2.5rem;
+-  color: var(--gold);
+-  margin-bottom: 1rem;
+-  opacity: 0.6;
++  font-size: 1.1rem;
+ }
+ 
+ .chat-welcome-title {
+   font-family: 'Cinzel', serif;
+-  font-size: 1.4rem;
+-  font-weight: 500;
+-  letter-spacing: 0.1em;
+-  color: var(--text-h);
++  font-size: 1.2rem;
++  font-weight: 600;
++  letter-spacing: 0.08em;
++  line-height: 1.4;
++  color: var(--text);
+   margin: 0;
+ }
+ 
+-.chat-welcome {
+-  display: flex;
+-  align-items: center;
+-  gap: 8px;
+-  justify-content: center;
+-}
+-
+ .chat-welcome-sub {
+-  font-family: 'Crimson Pro', serif;
+-  font-size: 1.1rem;
++  font-family: 'Crimson Pro', Georgia, serif;
++  font-size: 0.85rem;
+   color: var(--muted);
+-  font-weight: 300;
+-  font-style: italic;
++  margin-top: 2px;
+ }
+ 
+-/* ── Chat Bubbles ── */
++/* ── Mesaj satırı — ortak iskelet ── */
+ .chat-bubble {
+-  animation: fadeIn 0.4s ease;
+-  text-align: left;
+-}
+-
+-.chat-bubble.user {
+-  align-self: flex-end;
+-  max-width: 85%;
+-  background: rgba(154, 122, 74, 0.08);
+-  border-radius: 18px 18px 4px 18px;
+-  padding: 0.9rem 1.25rem;
++  width: 100%;
++  margin-bottom: 28px;
+ }
+ 
+-.chat-bubble.user p {
+-  font-family: 'Crimson Pro', serif;
+-  font-size: 1rem;
+-  line-height: 1.6;
+-  color: var(--text);
+-  margin: 0;
++/* ── Asistan (Maestro) mesajı — Claude tarzı: kart yok, düz metin ── */
++.chat-bubble.maestro {
++  display: flex;
++  flex-direction: column;
++  align-items: flex-start;
++  width: 100%;
++  padding: 0;
++  background: transparent;
++  border: none;
++  box-shadow: none;
+ }
+ 
+-
+ .chat-bubble-header {
+   display: flex;
+-  align-items: center;
+-  gap: 0.75rem;
+-  margin-bottom: 0.5rem;
++  align-items: baseline;
++  gap: 8px;
++  margin-bottom: 8px;
+ }
+ 
+ .chat-bubble-name {
+   font-family: 'Cinzel', serif;
+-  font-size: 0.7rem;
+-  letter-spacing: 0.12em;
+-  color: var(--gold);
++  font-size: 0.68rem;
++  letter-spacing: 0.1em;
+   text-transform: uppercase;
++  color: var(--gold);
++  font-weight: 600;
+ }
+ 
+ .chat-bubble-meta {
+   font-family: 'Crimson Pro', serif;
+-  font-size: 0.8rem;
++  font-size: 0.75rem;
+   color: var(--muted);
+-  font-weight: 300;
+ }
+ 
+-/* ── Response content ── */
+ .chat-bubble-content {
+-  font-family: 'Crimson Pro', serif;
+-  font-size: 0.95rem;
+-  line-height: 1.8;
++  width: 100%;
++  font-family: 'Crimson Pro', Georgia, serif;
++  font-size: 1rem;
++  line-height: 1.7;
+   color: var(--text);
+-  font-weight: 300;
+   text-align: left;
+ }
+ 
+-.chat-bubble-content h1,
+-.chat-bubble-content h2,
+-.chat-bubble-content h3 {
+-  font-family: 'Cinzel', serif;
+-  font-weight: 400;
+-  margin-top: 1.2rem;
+-  margin-bottom: 0.5rem;
+-  color: var(--text);
+-  text-align: left;
++.chat-bubble-content p { margin: 0 0 12px; }
++.chat-bubble-content p:last-child { margin-bottom: 0; }
++
++.chat-bubble-content ul,
++.chat-bubble-content ol {
++  list-style-position: outside;
++  padding-left: 1.2rem;
++  margin: 0 0 12px;
+ }
+ 
+-.chat-bubble-content h2 { font-size: 1.05rem; }
+-.chat-bubble-content h3 { font-size: 0.95rem; }
++.chat-bubble-content li { margin-bottom: 0.4rem; }
+ 
+-.chat-bubble-content p {
+-  margin-bottom: 0.6rem;
+-  text-align: left;
++.chat-bubble-content table {
++  width: 100%;
++  margin: 12px 0;
++  border-collapse: collapse;
+ }
+ 
+-.chat-bubble-content ul,
+-.chat-bubble-content ol {
+-  padding-left: 1.5rem;
+-  margin: 0.5rem 0;
+-  text-align: left;
++.chat-bubble-content strong {
++  font-weight: 600;
++  color: var(--text);
++}
++
++.chat-bubble-content h2 {
++  font-family: 'Cinzel', serif;
++  font-size: 1.1rem;
++  margin: 20px 0 10px;
+ }
+ 
+-.chat-bubble-content li {
+-  margin-bottom: 0.3rem;
++.chat-bubble-content h3 {
++  font-size: 1rem;
++  margin: 16px 0 8px;
+ }
+ 
+-.chat-bubble-content code {
+-  background: rgba(0, 0, 0, 0.04);
+-  padding: 0.15rem 0.4rem;
+-  border-radius: 4px;
+-  font-size: 0.85rem;
++.chat-bubble-content hr {
++  border: none;
++  border-top: 1px solid var(--border);
++  margin: 20px 0;
+ }
+ 
+ .chat-bubble-content pre {
+-  background: rgba(0, 0, 0, 0.04);
+-  border: 1px solid var(--border);
++  background: rgba(0,0,0,0.03);
++  padding: 12px 14px;
+   border-radius: 8px;
+-  padding: 1rem;
+   overflow-x: auto;
+-  margin: 0.75rem 0;
++  font-size: 0.85rem;
+ }
+ 
+-.chat-bubble-content pre code {
+-  background: none;
+-  padding: 0;
++/* ── Kullanıcı mesajı — sağa yaslı, hafif balon ── */
++.chat-bubble.user {
++  margin-left: auto;
++  max-width: 75%;
++  width: fit-content;
++  background: rgba(154,122,74,0.10);
++  border: 1px solid rgba(154,122,74,0.18);
++  padding: 12px 16px;
++  border-radius: 16px 16px 4px 16px;
+ }
+ 
+-.chat-bubble-content table {
+-  width: 100%;
+-  border-collapse: collapse;
+-  margin: 0.75rem 0;
+-  font-size: 0.85rem;
++.chat-bubble.user p {
++  font-size: 1rem;
++  line-height: 1.6;
++  color: var(--text);
++  margin: 0;
+ }
+ 
+-.chat-bubble-content th,
+-.chat-bubble-content td {
+-  border: 1px solid var(--border);
+-  padding: 0.5rem 0.75rem;
+-  text-align: left;
++.chat-bubble.user.user-long {
++  cursor: pointer;
++  position: relative;
++  max-height: 120px;
++  overflow: hidden;
+ }
+ 
+-.chat-bubble-content th {
+-  background: rgba(0, 0, 0, 0.03);
++.chat-bubble.user.user-long::after {
++  content: "";
++  position: absolute;
++  bottom: 0; left: 0; right: 0;
++  height: 40px;
++  background: linear-gradient(to bottom, transparent, rgba(154,122,74,0.10));
++  border-radius: 0 0 4px 16px;
++  pointer-events: none;
+ }
+ 
+-.chat-bubble-content strong {
+-  font-weight: 500;
++.chat-bubble.user.user-long:hover {
++  border-color: rgba(154,122,74,0.35);
++}
++
++.user-preview {
++  margin: 0;
++  line-height: 1.6;
++  color: var(--text);
++  font-size: 1rem;
+ }
+ 
+-/* ── Actions ── */
+-.chat-actions {
++.user-expand-hint {
++  display: block;
++  margin-top: 6px;
++  font-family: 'Cinzel', serif;
++  font-size: 0.62rem;
++  letter-spacing: 0.08em;
++  color: var(--gold);
++  opacity: 0.85;
++}
++
++/* ── Çelişki uyarısı ── */
++.confidence-alert {
+   display: flex;
+-  gap: 1.5rem;
+-  margin-top: 1rem;
+-  justify-content: flex-start;
+-  opacity: 0.7;
+-  transition: opacity 0.3s ease;
++  align-items: flex-start;
++  gap: 8px;
++  padding: 10px 14px;
++  margin-bottom: 12px;
++  background: rgba(217, 119, 6, 0.06);
++  border: 1px solid rgba(217, 119, 6, 0.2);
++  border-left: 3px solid #d97706;
++  border-radius: 0 8px 8px 0;
+ }
+ 
+-.chat-actions:hover {
+-  opacity: 1;
++.confidence-alert-icon {
++  font-size: 0.95rem;
++  flex-shrink: 0;
++  margin-top: 1px;
+ }
+ 
+-.chat-action-btn {
+-  background: none;
+-  border: none;
+-  color: var(--muted);
+-  font-family: 'Cinzel', serif;
+-  font-size: 0.75rem;
+-  letter-spacing: 0.1em;
++.confidence-alert-text {
++  font-family: 'Crimson Pro', serif;
++  font-size: 0.82rem;
++  color: #92400e;
++  line-height: 1.5;
++}
++
++/* ── Kopyala / Tekrar — Claude tarzı, sade, hover'da belirgin ── */
++.copy-bar {
++  display: flex;
++  gap: 10px;
++  margin-top: 12px;
++  opacity: 0.55;
++  transition: opacity 0.15s;
++}
++
++.chat-bubble.maestro:hover .copy-bar { opacity: 1; }
++
++.copy-btn,
++.retry-btn {
+   display: flex;
+   align-items: center;
+-  gap: 6px;
+-  cursor: pointer;
++  gap: 5px;
++  border: none;
++  background: transparent;
+   padding: 4px 8px;
+-  border-radius: 4px;
+-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+-  position: relative;
+-  overflow: hidden;
++  border-radius: 6px;
++  font-family: 'Crimson Pro', serif;
++  font-size: 0.78rem;
++  color: var(--muted);
++  cursor: pointer;
++  transition: background 0.15s, color 0.15s;
+ }
+ 
+-.chat-action-btn:hover {
+-  color: var(--gold);
+-  text-shadow: 0 0 8px rgba(154, 122, 74, 0.5);
+-  transform: translateY(-1px);
++.copy-btn:hover,
++.retry-btn:hover {
++  background: rgba(0,0,0,0.05);
++  color: var(--text);
+ }
+ 
+-.chat-action-btn:active {
+-  transform: scale(0.95);
+-}
++.copy-btn.copied { color: #1D9E75; }
+ 
+-/* ── Model Toggle ── */
+-.model-toggle-area {
+-  margin-top: 0.5rem;
+-}
++/* ── Model detayları accordion ── */
++.model-toggle-area { margin-top: 14px; }
+ 
+ .model-toggle-btn {
+   background: none;
+   border: none;
+-  color: var(--muted);
+   font-family: 'Cinzel', serif;
+-  font-size: 0.65rem;
+-  letter-spacing: 0.1em;
++  font-size: 0.62rem;
++  letter-spacing: 0.08em;
++  color: var(--muted);
+   cursor: pointer;
+-  padding: 0.3rem 0;
+-  transition: color 0.2s;
++  padding: 4px 0;
+ }
+ 
+-.model-toggle-btn:hover {
+-  color: var(--gold);
+-}
++.model-toggle-btn:hover { color: var(--gold); }
+ 
+-/* ── Model Accordion ── */
+ .model-responses-accordion {
+-  margin-top: 0.75rem;
+   display: flex;
+   flex-direction: column;
+-  gap: 0.5rem;
++  gap: 6px;
++  margin-top: 8px;
+ }
+ 
+ .model-accordion-item {
+   border: 1px solid var(--border);
+   border-radius: 10px;
+   overflow: hidden;
+-  border-left: 3px solid var(--mc);
+ }
+ 
+ .model-accordion-header {
+   display: flex;
+   align-items: center;
+-  gap: 0.5rem;
++  gap: 8px;
+   width: 100%;
+-  padding: 0.6rem 0.75rem;
+-  background: none;
++  background: transparent;
+   border: none;
++  padding: 8px 12px;
+   cursor: pointer;
+-  font-family: 'Crimson Pro', serif;
+-  font-size: 0.85rem;
+-  color: var(--text);
+-  transition: background 0.15s;
+-}
+-
+-.model-accordion-header:hover {
+-  background: rgba(0, 0, 0, 0.02);
++  text-align: left;
+ }
+ 
+ .model-accordion-dot {
+@@ -309,15 +328,13 @@
+ }
+ 
+ .model-accordion-name {
+-  font-family: 'Cinzel', serif;
+-  font-size: 0.65rem;
+-  letter-spacing: 0.1em;
+-  text-transform: uppercase;
+-  color: var(--mc);
++  font-family: 'Crimson Pro', serif;
++  font-size: 0.85rem;
++  color: var(--text);
++  flex: 1;
+ }
+ 
+ .model-accordion-time {
+-  margin-left: auto;
+   font-size: 0.75rem;
+   color: var(--muted);
+ }
+@@ -325,115 +342,129 @@
+ .model-accordion-arrow {
+   font-size: 0.7rem;
+   color: var(--muted);
+-  margin-left: 0.25rem;
+ }
+ 
+ .model-accordion-body {
+-  padding: 0.75rem 1rem;
+-  border-top: 1px solid var(--border);
+-  font-family: 'Crimson Pro', serif;
+-  font-size: 0.85rem;
+-  line-height: 1.7;
++  padding: 4px 12px 12px 28px;
++  font-size: 0.88rem;
++  line-height: 1.6;
+   color: var(--text);
+-  font-weight: 300;
+-  max-height: 300px;
+-  overflow-y: auto;
+-  text-align: left;
+ }
+ 
+-.model-accordion-body p {
+-  margin-bottom: 0.4rem;
+-}
+-
+-/* ── Thinking Indicator ── */
++/* ── Düşünme göstergesi ── */
+ .thinking-indicator {
+   display: flex;
+   flex-direction: column;
+-  gap: 0.5rem;
+-  padding: 0.25rem 0;
++  gap: 6px;
++  padding: 4px 0;
+ }
+ 
+ .thinking-step {
+   display: flex;
+   align-items: center;
+-  gap: 0.5rem;
+-  font-family: 'Crimson Pro', serif;
++  gap: 8px;
+   font-size: 0.85rem;
+   color: var(--muted);
+-  opacity: 0.4;
+-  transition: all 0.3s ease;
++  opacity: 0.6;
++  transition: opacity 0.2s;
+ }
+ 
+-.thinking-step.active {
++.thinking-step.active,
++.thinking-step.done {
+   opacity: 1;
+-  color: var(--gold);
+ }
+ 
+-.thinking-step.done {
+-  opacity: 0.6;
+-  color: var(--chatgpt);
++.thinking-step.done { color: #1D9E75; }
++
++.thinking-dots {
++  display: flex;
++  gap: 4px;
++  margin-top: 4px;
+ }
+ 
+-.thinking-icon {
+-  font-size: 0.9rem;
+-  margin-right: 6px;
+-  width: 1.2rem;
+-  text-align: center;
++.thinking-dots .dot {
++  width: 5px;
++  height: 5px;
++  border-radius: 50%;
++  background: var(--gold);
++  opacity: 0.4;
++  animation: dotPulse 1.2s ease-in-out infinite;
+ }
+ 
+-.thinking-label {
+-  font-weight: 300;
++.thinking-dots .dot:nth-child(2) { animation-delay: 0.2s; }
++.thinking-dots .dot:nth-child(3) { animation-delay: 0.4s; }
++
++@keyframes dotPulse {
++  0%, 100% { opacity: 0.3; transform: scale(1); }
++  50% { opacity: 1; transform: scale(1.3); }
+ }
+ 
+-.thinking-dots {
++/* ── Uzun mesaj modalı ── */
++.text-modal-overlay {
++  position: fixed;
++  inset: 0;
++  background: rgba(0,0,0,0.4);
++  backdrop-filter: blur(4px);
+   display: flex;
+-  gap: 5px;
+-  padding-top: 0.25rem;
+-  padding-left: 1.7rem;
++  align-items: center;
++  justify-content: center;
++  z-index: 9999;
++  padding: 1.5rem;
+ }
+ 
+-/* ── Chat Mode Prompt — fixed bottom ── */
+-.mode-chat .center-fixed {
+-  position: fixed;
+-  bottom: 0;
+-  left: 50%;
+-  transform: translateX(-50%);
+-  top: auto;
+-  width: 720px;
+-  max-width: 90vw;
+-  padding: 1rem 0 1.5rem;
+-  z-index: 50;
+-  background: linear-gradient(to top, var(--bg) 70%, transparent 100%);
++.text-modal {
++  background: var(--surface);
++  border-radius: 16px;
++  max-width: 560px;
++  width: 100%;
++  max-height: 80vh;
++  display: flex;
++  flex-direction: column;
++  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+ }
+ 
+-.mode-chat .center-fixed .consensus-badge,
+-.mode-chat .center-fixed .char-wrap,
+-.mode-chat .center-fixed .synthesis-trigger,
+-.mode-chat .center-fixed .synthesis-btns {
+-  display: none;
++.text-modal-header {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  padding: 16px 20px;
++  border-bottom: 1px solid var(--border);
+ }
+ 
+-.mode-chat .prompt-row {
+-  justify-content: center;
++.text-modal-title {
++  font-family: 'Cinzel', serif;
++  font-size: 0.75rem;
++  letter-spacing: 0.08em;
++  color: var(--muted);
+ }
+ 
+-.mode-chat .prompt-area {
+-  width: 100%;
++.text-modal-actions {
++  display: flex;
++  gap: 8px;
+ }
+ 
+-/* ── Responsive ── */
+-@media (max-width: 768px) {
+-  .chat-view {
+-    padding: 1rem;
+-    padding-bottom: 160px;
+-  }
++.text-modal-btn {
++  border: 1px solid var(--border);
++  background: transparent;
++  padding: 5px 12px;
++  border-radius: 8px;
++  font-size: 0.78rem;
++  color: var(--text);
++  cursor: pointer;
++}
+ 
+-  .mode-chat .center-fixed {
+-    width: 100%;
+-    padding: 0.5rem 1rem 1rem;
+-  }
++.text-modal-btn:hover { background: rgba(0,0,0,0.04); }
++.text-modal-btn.close { color: #c85050; }
+ 
+-  .chat-bubble.user {
+-    max-width: 90%;
+-  }
++.text-modal-body {
++  padding: 20px;
++  overflow-y: auto;
++}
++
++.text-modal-body p {
++  font-family: 'Crimson Pro', serif;
++  font-size: 1rem;
++  line-height: 1.7;
++  color: var(--text);
++  white-space: pre-wrap;
+ }
